@@ -23,13 +23,13 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: #1D3557; /* 纯蓝色背景，避免渐变兼容问题 */
+            background: #1D3557; /* 纯蓝色背景 */
             padding: 20px 0;
             overflow: hidden;
             position: relative;
         }
 
-        /* 全局雪花容器 - 最基础的实现 */
+        /* 全局雪花容器 */
         #snowContainer {
             position: fixed;
             top: 0;
@@ -40,7 +40,7 @@
             z-index: 1;
         }
 
-        /* 雪花样式 - 简化动画 */
+        /* 雪花样式 */
         .snowflake {
             position: absolute;
             color: #fff;
@@ -56,6 +56,62 @@
             100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
         }
 
+        /* 加载动画遮罩 */
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1D3557;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+
+        /* 圣诞加载动画 */
+        .christmas-loader {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .loader-tree {
+            font-size: 60px;
+            animation: treeSway 2s ease-in-out infinite alternate;
+        }
+
+        .loader-gift {
+            font-size: 40px;
+            margin: 0 20px;
+            animation: giftBounce 1.5s ease-in-out infinite alternate;
+        }
+
+        .loading-text {
+            color: #FFD700;
+            font-size: 24px;
+            text-shadow: 0 0 10px #FFD700;
+            animation: textPulse 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes treeSway {
+            from { transform: rotate(-10deg); }
+            to { transform: rotate(10deg); }
+        }
+
+        @keyframes giftBounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-15px); }
+        }
+
+        @keyframes textPulse {
+            from { opacity: 0.7; transform: scale(1); }
+            to { opacity: 1; transform: scale(1.05); }
+        }
+
         h1 {
             font-size: 28px;
             color: #FFD700; /* 金色 */
@@ -66,7 +122,7 @@
             position: relative;
         }
 
-        /* 游戏容器 - 固定尺寸确保显示 */
+        /* 游戏容器 */
         .game-box {
             width: 320px;
             height: 320px;
@@ -78,7 +134,7 @@
             margin-bottom: 15px;
         }
 
-        /* 画布 - 强制覆盖容器 */
+        /* 画布 */
         #gameCanvas {
             width: 100%;
             height: 100%;
@@ -91,12 +147,16 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 20px;
+            font-size: 18px;
             color: #E63946; /* 红色 */
             font-weight: bold;
             text-align: center;
             display: none;
             z-index: 3;
+            background: rgba(241, 250, 238, 0.9);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
         }
 
         /* 分数面板 */
@@ -112,7 +172,7 @@
             position: relative;
         }
 
-        /* 方向按钮 - 简化布局 */
+        /* 方向按钮 */
         .controls {
             display: grid;
             grid-template-columns: 60px 60px 60px;
@@ -165,7 +225,7 @@
             background: #E63946;
         }
 
-        /* 祝福弹窗 - 简化但保留效果 */
+        /* 祝福弹窗 */
         #blessingModal {
             position: fixed;
             top: 0;
@@ -232,6 +292,16 @@
     </style>
 </head>
 <body>
+    <!-- 加载动画遮罩 -->
+    <div id="loadingScreen">
+        <div class="christmas-loader">
+            <div class="loader-tree">🎄</div>
+            <div class="loader-gift">🎁</div>
+            <div class="loader-tree">🎄</div>
+        </div>
+        <div class="loading-text">圣诞祝福加载中...</div>
+    </div>
+
     <!-- 雪花容器 -->
     <div id="snowContainer"></div>
 
@@ -280,6 +350,7 @@
         const blessingModal = document.getElementById('blessingModal');
         const closeModal = document.getElementById('closeModal');
         const snowContainer = document.getElementById('snowContainer');
+        const loadingScreen = document.getElementById('loadingScreen');
 
         // ========== 游戏核心变量 ==========
         const grid = 20; // 格子大小
@@ -299,20 +370,29 @@
         let isPaused = false;
         let giftCount = 0; // 吃到的礼物数量
 
-        // ========== 页面加载后立即初始化 ==========
+        // ========== 页面加载后执行 ==========
         window.onload = function() {
-            // 1. 立即创建雪花
+            // 1. 显示加载动画2秒后隐藏
+            setTimeout(() => {
+                loadingScreen.style.opacity = '0';
+                loadingScreen.style.transition = 'opacity 0.8s ease';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 800);
+            }, 2000);
+
+            // 2. 立即创建雪花
             createSnow();
             setInterval(createSnow, 300);
 
-            // 2. 初始化游戏
+            // 3. 初始化游戏
             initGame();
 
-            // 3. 绑定事件
+            // 4. 绑定事件
             bindEvents();
         };
 
-        // ========== 雪花生成函数（最基础实现） ==========
+        // ========== 雪花生成函数 ==========
         function createSnow() {
             const snow = document.createElement('div');
             snow.className = 'snowflake';
@@ -403,14 +483,14 @@
             // 碰撞检测
             // 1. 撞墙
             if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
-                gameOver();
+                gameOver('撞墙');
                 return;
             }
             
             // 2. 撞自己
             for (let i = 1; i < snake.length; i++) {
                 if (head.x === snake[i].x && head.y === snake[i].y) {
-                    gameOver();
+                    gameOver('撞自己');
                     return;
                 }
             }
@@ -445,7 +525,7 @@
             drawGame();
         }
 
-        // ========== 游戏绘制（最清晰的实现） ==========
+        // ========== 游戏绘制 ==========
         function drawGame() {
             // 1. 清空画布
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -494,11 +574,12 @@
             });
         }
 
-        // ========== 游戏结束 ==========
-        function gameOver() {
+        // ========== 游戏结束（定制提示语） ==========
+        function gameOver(type) {
             clearInterval(gameLoop);
             gameTip.style.display = 'block';
-            gameTip.textContent = '撞墙/撞自己啦！重新开始吧';
+            // 温馨的鼓励提示语
+            gameTip.textContent = '加油亲爱的！再接再厉，只需要吃5个就有彩蛋哦！';
             isPaused = true;
         }
 
