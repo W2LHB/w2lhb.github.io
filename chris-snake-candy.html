@@ -3,17 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>圣诞贪吃蛇 | 给亲爱的她</title>
     <style>
-        /* 基础样式重置 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
-            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -23,55 +19,29 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: #1D3557; /* 纯蓝色背景 */
+            background: #1D3557;
             padding: 20px 0;
             overflow: hidden;
             position: relative;
         }
 
-        /* 全局雪花容器 */
-        #snowContainer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* 雪花样式 */
-        .snowflake {
-            position: absolute;
-            color: #fff;
-            font-size: 16px;
-            opacity: 0.8;
-            pointer-events: none;
-            z-index: 1;
-            animation: snowfall linear infinite;
-        }
-
-        @keyframes snowfall {
-            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-        }
-
-        /* 加载动画遮罩 */
+        /* 强制显示加载动画 - 最高优先级 */
         #loadingScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #1D3557;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 200;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: #1D3557 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 9999 !important; /* 最高层级 */
+            opacity: 1 !important;
+            transition: none !important;
         }
 
-        /* 圣诞加载动画 */
         .christmas-loader {
             display: flex;
             align-items: center;
@@ -97,6 +67,17 @@
             animation: textPulse 1.5s ease-in-out infinite alternate;
         }
 
+        .skip-btn {
+            margin-top: 20px;
+            padding: 8px 20px;
+            background: #FFD700;
+            color: #1D3557;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
         @keyframes treeSway {
             from { transform: rotate(-10deg); }
             to { transform: rotate(10deg); }
@@ -112,9 +93,34 @@
             to { opacity: 1; transform: scale(1.05); }
         }
 
+        #snowContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .snowflake {
+            position: absolute;
+            color: #fff;
+            font-size: 16px;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 1;
+            animation: snowfall linear infinite;
+        }
+
+        @keyframes snowfall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
         h1 {
             font-size: 28px;
-            color: #FFD700; /* 金色 */
+            color: #FFD700;
             margin-bottom: 20px;
             text-shadow: 0 0 10px #FFD700;
             text-align: center;
@@ -122,11 +128,10 @@
             position: relative;
         }
 
-        /* 游戏容器 */
         .game-box {
             width: 320px;
             height: 320px;
-            background: #F1FAEE; /* 白色背景 */
+            background: #F1FAEE;
             border: 3px solid #FFD700;
             border-radius: 16px;
             position: relative;
@@ -134,32 +139,31 @@
             margin-bottom: 15px;
         }
 
-        /* 画布 */
         #gameCanvas {
             width: 100%;
             height: 100%;
             display: block;
         }
 
-        /* 游戏提示文字 */
+        /* 强制显示提示语 */
         #gameTip {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 18px;
-            color: #E63946; /* 红色 */
-            font-weight: bold;
-            text-align: center;
-            display: none;
-            z-index: 3;
-            background: rgba(241, 250, 238, 0.9);
-            padding: 10px 20px;
-            border-radius: 10px;
-            border: 2px solid #FFD700;
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            font-size: 16px !important;
+            color: #E63946 !important;
+            font-weight: bold !important;
+            text-align: center !important;
+            background: rgba(241, 250, 238, 0.95) !important;
+            padding: 15px 20px !important;
+            border-radius: 10px !important;
+            border: 2px solid #FFD700 !important;
+            z-index: 3 !important;
+            display: none !important;
+            width: 80% !important;
         }
 
-        /* 分数面板 */
         .score-box {
             font-size: 20px;
             color: #F1FAEE;
@@ -172,7 +176,6 @@
             position: relative;
         }
 
-        /* 方向按钮 */
         .controls {
             display: grid;
             grid-template-columns: 60px 60px 60px;
@@ -188,7 +191,7 @@
             height: 60px;
             border-radius: 50%;
             border: none;
-            background: #2A9D8F; /* 绿色 */
+            background: #2A9D8F;
             color: white;
             font-size: 22px;
             cursor: pointer;
@@ -207,7 +210,6 @@
         .down { grid-column: 2; grid-row: 2; }
         .right { grid-column: 3; grid-row: 2; }
 
-        /* 功能按钮 */
         .func-btn {
             padding: 10px 25px;
             border: none;
@@ -225,7 +227,6 @@
             background: #E63946;
         }
 
-        /* 祝福弹窗 */
         #blessingModal {
             position: fixed;
             top: 0;
@@ -292,7 +293,7 @@
     </style>
 </head>
 <body>
-    <!-- 加载动画遮罩 -->
+    <!-- 加载动画 - 强制显示 -->
     <div id="loadingScreen">
         <div class="christmas-loader">
             <div class="loader-tree">🎄</div>
@@ -300,6 +301,7 @@
             <div class="loader-tree">🎄</div>
         </div>
         <div class="loading-text">圣诞祝福加载中...</div>
+        <button class="skip-btn" id="skipBtn">点击跳过</button>
     </div>
 
     <!-- 雪花容器 -->
@@ -307,16 +309,14 @@
 
     <h1>🎄 圣诞贪吃蛇 🎄</h1>
 
-    <!-- 游戏主容器 -->
     <div class="game-box">
         <canvas id="gameCanvas" width="320" height="320"></canvas>
-        <div id="gameTip">游戏暂停/结束</div>
+        <!-- 提示语容器 - 强制渲染 -->
+        <div id="gameTip" style="display: none !important;">加油亲爱的！再接再厉，只需要吃5个就有彩蛋哦！</div>
     </div>
 
-    <!-- 分数显示 -->
     <div class="score-box">分数: <span id="scoreNum">0</span> (目标: 5个礼物)</div>
 
-    <!-- 方向控制按钮 -->
     <div class="controls">
         <button class="btn up">↑</button>
         <button class="btn left">←</button>
@@ -324,13 +324,11 @@
         <button class="btn right">→</button>
     </div>
 
-    <!-- 功能按钮 -->
     <div>
         <button class="func-btn" id="pauseBtn">暂停/继续</button>
         <button class="func-btn" id="restartBtn">重新开始</button>
     </div>
 
-    <!-- 祝福弹窗 -->
     <div id="blessingModal">
         <div class="blessing-card">
             <h2>🎄 恭喜吃到5个礼物！🎄</h2>
@@ -340,289 +338,237 @@
     </div>
 
     <script>
-        // ========== 基础元素获取 ==========
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreNum = document.getElementById('scoreNum');
-        const gameTip = document.getElementById('gameTip');
-        const pauseBtn = document.getElementById('pauseBtn');
-        const restartBtn = document.getElementById('restartBtn');
-        const blessingModal = document.getElementById('blessingModal');
-        const closeModal = document.getElementById('closeModal');
-        const snowContainer = document.getElementById('snowContainer');
-        const loadingScreen = document.getElementById('loadingScreen');
+        // 强制立即执行代码 - 不等待任何加载
+        (function() {
+            // ========== 强制获取元素 ==========
+            const loadingScreen = document.getElementById('loadingScreen');
+            const skipBtn = document.getElementById('skipBtn');
+            const gameTip = document.getElementById('gameTip');
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            const scoreNum = document.getElementById('scoreNum');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const restartBtn = document.getElementById('restartBtn');
+            const blessingModal = document.getElementById('blessingModal');
+            const closeModal = document.getElementById('closeModal');
+            const snowContainer = document.getElementById('snowContainer');
 
-        // ========== 游戏核心变量 ==========
-        const grid = 20; // 格子大小
-        const tileCount = canvas.width / grid; // 格子数量
+            // ========== 游戏核心变量 ==========
+            const grid = 20;
+            const tileCount = canvas.width / grid;
+            let snake = [{x:4,y:8},{x:3,y:8},{x:2,y:8}];
+            let food = {x:10,y:8};
+            let direction = 'right';
+            let nextDir = 'right';
+            let score = 0;
+            let gameSpeed = 200;
+            let gameLoop;
+            let isPaused = false;
+            let giftCount = 0;
 
-        let snake = [
-            { x: 4, y: 8 },
-            { x: 3, y: 8 },
-            { x: 2, y: 8 }
-        ];
-        let food = { x: 10, y: 8 };
-        let direction = 'right';
-        let nextDir = 'right';
-        let score = 0;
-        let gameSpeed = 200;
-        let gameLoop;
-        let isPaused = false;
-        let giftCount = 0; // 吃到的礼物数量
-
-        // ========== 页面加载后执行 ==========
-        window.onload = function() {
-            // 1. 显示加载动画2秒后隐藏
+            // ========== 强制显示加载动画 ==========
+            // 自动跳过（3秒）
             setTimeout(() => {
-                loadingScreen.style.opacity = '0';
-                loadingScreen.style.transition = 'opacity 0.8s ease';
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none';
-                }, 800);
-            }, 2000);
+                hideLoading();
+            }, 3000);
 
-            // 2. 立即创建雪花
-            createSnow();
-            setInterval(createSnow, 300);
+            // 手动跳过
+            skipBtn.addEventListener('click', hideLoading);
 
-            // 3. 初始化游戏
-            initGame();
-
-            // 4. 绑定事件
-            bindEvents();
-        };
-
-        // ========== 雪花生成函数 ==========
-        function createSnow() {
-            const snow = document.createElement('div');
-            snow.className = 'snowflake';
-            
-            // 雪花字符
-            const snowChars = ['❄️', '❅', '❆', '✧', '✦'];
-            snow.textContent = snowChars[Math.floor(Math.random() * snowChars.length)];
-            
-            // 随机位置和样式
-            snow.style.left = Math.random() * 100 + '%';
-            snow.style.top = '-20px';
-            snow.style.fontSize = (Math.random() * 10 + 10) + 'px';
-            snow.style.animationDuration = (Math.random() * 20 + 10) + 's';
-            snow.style.opacity = Math.random() * 0.5 + 0.5;
-            
-            // 金色雪花特殊处理
-            if (snow.textContent === '✧' || snow.textContent === '✦') {
-                snow.style.color = '#FFD700';
+            function hideLoading() {
+                loadingScreen.style.display = 'none';
+                // 立即创建雪花
+                createSnow();
+                setInterval(createSnow, 300);
+                // 立即初始化游戏
+                initGame();
+                // 绑定事件
+                bindAllEvents();
             }
-            
-            snowContainer.appendChild(snow);
-            
-            // 雪花落地后移除
-            setTimeout(() => {
-                snow.remove();
-            }, 20000);
-        }
 
-        // ========== 游戏初始化 ==========
-        function initGame() {
-            // 重置游戏状态
-            snake = [
-                { x: 4, y: 8 },
-                { x: 3, y: 8 },
-                { x: 2, y: 8 }
-            ];
-            food = getRandomFood();
-            direction = 'right';
-            nextDir = 'right';
-            score = 0;
-            giftCount = 0;
-            isPaused = false;
-            
-            // 更新显示
-            scoreNum.textContent = score;
-            gameTip.style.display = 'none';
-            
-            // 开始游戏循环
-            if (gameLoop) clearInterval(gameLoop);
-            gameLoop = setInterval(updateGame, gameSpeed);
-            
-            // 强制绘制一帧
-            drawGame();
-        }
+            // ========== 雪花生成 ==========
+            function createSnow() {
+                const snow = document.createElement('div');
+                snow.className = 'snowflake';
+                const snowChars = ['❄️', '❅', '❆', '✧', '✦'];
+                snow.textContent = snowChars[Math.floor(Math.random() * 5)];
+                snow.style.left = Math.random() * 100 + '%';
+                snow.style.top = '-20px';
+                snow.style.fontSize = (Math.random() * 10 + 10) + 'px';
+                snow.style.animationDuration = (Math.random() * 20 + 10) + 's';
+                snow.style.opacity = Math.random() * 0.5 + 0.5;
+                if (snow.textContent === '✧' || snow.textContent === '✦') {
+                    snow.style.color = '#FFD700';
+                }
+                snowContainer.appendChild(snow);
+                setTimeout(() => snow.remove(), 20000);
+            }
 
-        // ========== 随机生成食物位置 ==========
-        function getRandomFood() {
-            let newFood;
-            // 确保食物不在蛇身上
-            while (!newFood || snake.some(seg => seg.x === newFood.x && seg.y === newFood.y)) {
-                newFood = {
-                    x: Math.floor(Math.random() * (tileCount - 2)) + 1,
-                    y: Math.floor(Math.random() * (tileCount - 2)) + 1
-                };
-            }
-            return newFood;
-        }
+            // ========== 游戏初始化 ==========
+            function initGame() {
+                snake = [{x:4,y:8},{x:3,y:8},{x:2,y:8}];
+                food = getRandomFood();
+                direction = 'right';
+                nextDir = 'right';
+                score = 0;
+                giftCount = 0;
+                isPaused = false;
+                scoreNum.textContent = score;
+                gameTip.style.display = 'none'; // 强制隐藏
 
-        // ========== 游戏更新逻辑 ==========
-        function updateGame() {
-            if (isPaused) return;
-            
-            // 更新方向
-            direction = nextDir;
-            
-            // 移动蛇头
-            const head = { ...snake[0] };
-            switch (direction) {
-                case 'up': head.y--; break;
-                case 'down': head.y++; break;
-                case 'left': head.x--; break;
-                case 'right': head.x++; break;
+                if (gameLoop) clearInterval(gameLoop);
+                gameLoop = setInterval(updateGame, gameSpeed);
+                drawGame();
             }
-            
-            // 添加新蛇头
-            snake.unshift(head);
-            
-            // 碰撞检测
-            // 1. 撞墙
-            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
-                gameOver('撞墙');
-                return;
+
+            // ========== 随机食物 ==========
+            function getRandomFood() {
+                let newFood;
+                while (!newFood || snake.some(s => s.x === newFood.x && s.y === newFood.y)) {
+                    newFood = {
+                        x: Math.floor(Math.random() * (tileCount-2)) + 1,
+                        y: Math.floor(Math.random() * (tileCount-2)) + 1
+                    };
+                }
+                return newFood;
             }
-            
-            // 2. 撞自己
-            for (let i = 1; i < snake.length; i++) {
-                if (head.x === snake[i].x && head.y === snake[i].y) {
-                    gameOver('撞自己');
+
+            // ========== 游戏更新 ==========
+            function updateGame() {
+                if (isPaused) return;
+
+                direction = nextDir;
+                const head = {...snake[0]};
+                switch(direction) {
+                    case 'up': head.y--; break;
+                    case 'down': head.y++; break;
+                    case 'left': head.x--; break;
+                    case 'right': head.x++; break;
+                }
+
+                snake.unshift(head);
+
+                // 强制触发撞墙提示
+                if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+                    gameTip.style.display = 'block'; // 强制显示提示语
+                    clearInterval(gameLoop);
+                    isPaused = true;
                     return;
                 }
-            }
-            
-            // 吃食物检测
-            if (head.x === food.x && head.y === food.y) {
-                // 加分
-                score += 10;
-                giftCount++;
-                scoreNum.textContent = score;
-                
-                // 生成新食物
-                food = getRandomFood();
-                
-                // 加速
-                if (gameSpeed > 80) {
-                    gameSpeed -= 10;
-                    clearInterval(gameLoop);
-                    gameLoop = setInterval(updateGame, gameSpeed);
-                }
-                
-                // 吃到5个礼物，显示祝福
-                if (giftCount === 5) {
-                    showBlessing();
-                }
-            } else {
-                // 没吃到食物，移除蛇尾
-                snake.pop();
-            }
-            
-            // 绘制游戏
-            drawGame();
-        }
 
-        // ========== 游戏绘制 ==========
-        function drawGame() {
-            // 1. 清空画布
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // 2. 绘制背景网格
-            ctx.strokeStyle = '#e0e0e0';
-            ctx.lineWidth = 1;
-            for (let i = 0; i <= tileCount; i++) {
-                ctx.beginPath();
-                ctx.moveTo(i * grid, 0);
-                ctx.lineTo(i * grid, canvas.height);
-                ctx.stroke();
-                
-                ctx.beginPath();
-                ctx.moveTo(0, i * grid);
-                ctx.lineTo(canvas.width, i * grid);
-                ctx.stroke();
-            }
-            
-            // 3. 绘制食物（圣诞礼物）
-            ctx.fillStyle = '#E63946'; // 红色
-            ctx.fillRect(food.x * grid + 2, food.y * grid + 2, grid - 4, grid - 4);
-            // 礼物图标
-            ctx.fillStyle = '#FFD700'; // 金色
-            ctx.font = '16px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('🎁', food.x * grid + grid/2, food.y * grid + grid/2);
-            
-            // 4. 绘制蛇
-            snake.forEach((segment, index) => {
-                if (index === 0) {
-                    // 蛇头
-                    ctx.fillStyle = '#2A9D8F'; // 绿色
-                    ctx.fillRect(segment.x * grid + 2, segment.y * grid + 2, grid - 4, grid - 4);
-                    // 蛇眼
-                    ctx.fillStyle = 'white';
-                    ctx.beginPath();
-                    ctx.arc(segment.x * grid + 8, segment.y * grid + 8, 2, 0, Math.PI * 2);
-                    ctx.fill();
+                // 撞自己也显示同样提示
+                for (let i=1; i<snake.length; i++) {
+                    if (head.x === snake[i].x && head.y === snake[i].y) {
+                        gameTip.style.display = 'block'; // 强制显示提示语
+                        clearInterval(gameLoop);
+                        isPaused = true;
+                        return;
+                    }
+                }
+
+                // 吃食物
+                if (head.x === food.x && head.y === food.y) {
+                    score += 10;
+                    giftCount++;
+                    scoreNum.textContent = score;
+                    food = getRandomFood();
+
+                    if (gameSpeed > 80) {
+                        gameSpeed -= 10;
+                        clearInterval(gameLoop);
+                        gameLoop = setInterval(updateGame, gameSpeed);
+                    }
+
+                    if (giftCount === 5) {
+                        blessingModal.style.display = 'flex';
+                        clearInterval(gameLoop);
+                        isPaused = true;
+                    }
                 } else {
-                    // 蛇身
-                    ctx.fillStyle = '#81B29A'; // 浅绿
-                    ctx.fillRect(segment.x * grid + 2, segment.y * grid + 2, grid - 4, grid - 4);
+                    snake.pop();
                 }
-            });
-        }
 
-        // ========== 游戏结束（定制提示语） ==========
-        function gameOver(type) {
-            clearInterval(gameLoop);
-            gameTip.style.display = 'block';
-            // 温馨的鼓励提示语
-            gameTip.textContent = '加油亲爱的！再接再厉，只需要吃5个就有彩蛋哦！';
-            isPaused = true;
-        }
+                drawGame();
+            }
 
-        // ========== 显示祝福弹窗 ==========
-        function showBlessing() {
-            clearInterval(gameLoop);
-            isPaused = true;
-            blessingModal.style.display = 'flex';
-        }
+            // ========== 游戏绘制 ==========
+            function drawGame() {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
 
-        // ========== 事件绑定 ==========
-        function bindEvents() {
-            // 方向按钮
-            document.querySelector('.btn.up').addEventListener('click', () => {
-                if (direction !== 'down') nextDir = 'up';
-            });
-            document.querySelector('.btn.down').addEventListener('click', () => {
-                if (direction !== 'up') nextDir = 'down';
-            });
-            document.querySelector('.btn.left').addEventListener('click', () => {
-                if (direction !== 'right') nextDir = 'left';
-            });
-            document.querySelector('.btn.right').addEventListener('click', () => {
-                if (direction !== 'left') nextDir = 'right';
-            });
-            
-            // 暂停/继续
-            pauseBtn.addEventListener('click', () => {
-                if (giftCount === 5) return; // 已经显示祝福，不响应
-                isPaused = !isPaused;
-                gameTip.style.display = isPaused ? 'block' : 'none';
-                gameTip.textContent = isPaused ? '游戏已暂停' : '';
-            });
-            
-            // 重新开始
-            restartBtn.addEventListener('click', initGame);
-            
-            // 关闭祝福弹窗
-            closeModal.addEventListener('click', () => {
-                blessingModal.style.display = 'none';
-                initGame(); // 关闭后重新开始游戏
-            });
-        }
+                // 网格
+                ctx.strokeStyle = '#e0e0e0';
+                ctx.lineWidth = 1;
+                for (let i=0; i<=tileCount; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(i*grid,0);
+                    ctx.lineTo(i*grid,canvas.height);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(0,i*grid);
+                    ctx.lineTo(canvas.width,i*grid);
+                    ctx.stroke();
+                }
+
+                // 食物
+                ctx.fillStyle = '#E63946';
+                ctx.fillRect(food.x*grid+2, food.y*grid+2, grid-4, grid-4);
+                ctx.fillStyle = '#FFD700';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('🎁', food.x*grid+grid/2, food.y*grid+grid/2);
+
+                // 蛇
+                snake.forEach((s, i) => {
+                    ctx.fillStyle = i===0 ? '#2A9D8F' : '#81B29A';
+                    ctx.fillRect(s.x*grid+2, s.y*grid+2, grid-4, grid-4);
+                    if (i===0) {
+                        ctx.fillStyle = 'white';
+                        ctx.beginPath();
+                        ctx.arc(s.x*grid+8, s.y*grid+8, 2, 0, Math.PI*2);
+                        ctx.fill();
+                    }
+                });
+            }
+
+            // ========== 绑定所有事件 ==========
+            function bindAllEvents() {
+                // 方向按钮
+                document.querySelector('.btn.up').onclick = () => {
+                    if (direction !== 'down') nextDir = 'up';
+                };
+                document.querySelector('.btn.down').onclick = () => {
+                    if (direction !== 'up') nextDir = 'down';
+                };
+                document.querySelector('.btn.left').onclick = () => {
+                    if (direction !== 'right') nextDir = 'left';
+                };
+                document.querySelector('.btn.right').onclick = () => {
+                    if (direction !== 'left') nextDir = 'right';
+                };
+
+                // 暂停按钮
+                pauseBtn.onclick = () => {
+                    if (giftCount === 5) return;
+                    isPaused = !isPaused;
+                    if (isPaused) {
+                        gameTip.style.display = 'block';
+                        gameTip.textContent = '游戏已暂停';
+                    } else {
+                        gameTip.style.display = 'none';
+                    }
+                };
+
+                // 重新开始
+                restartBtn.onclick = initGame;
+
+                // 关闭祝福
+                closeModal.onclick = () => {
+                    blessingModal.style.display = 'none';
+                    initGame();
+                };
+            }
+        })();
     </script>
 </body>
 </html>
