@@ -25,74 +25,84 @@
             position: relative;
         }
 
-        /* 强制显示加载动画 - 最高优先级 */
+        /* 轻量级加载动画 - 纯CSS实现，无JS依赖 */
         #loadingScreen {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            background: #1D3557 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: center !important;
-            z-index: 9999 !important; /* 最高层级 */
-            opacity: 1 !important;
-            transition: none !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1D3557;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            /* 加载完成后自动隐藏的过渡效果 */
+            transition: opacity 0.6s ease, visibility 0.6s ease;
         }
 
-        .christmas-loader {
+        /* 加载完成后的状态 */
+        #loadingScreen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* 圣诞加载动画元素 */
+        .loader-wrapper {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
         }
 
-        .loader-tree {
-            font-size: 60px;
-            animation: treeSway 2s ease-in-out infinite alternate;
+        .loader-item {
+            font-size: 50px;
+            margin: 0 15px;
+        }
+
+        .loader-tree1 {
+            animation: treeSway1 2s ease-in-out infinite alternate;
         }
 
         .loader-gift {
-            font-size: 40px;
-            margin: 0 20px;
-            animation: giftBounce 1.5s ease-in-out infinite alternate;
+            animation: giftBounce 1.8s ease-in-out infinite alternate;
+        }
+
+        .loader-tree2 {
+            animation: treeSway2 2s ease-in-out infinite alternate;
         }
 
         .loading-text {
             color: #FFD700;
-            font-size: 24px;
-            text-shadow: 0 0 10px #FFD700;
-            animation: textPulse 1.5s ease-in-out infinite alternate;
+            font-size: 22px;
+            text-shadow: 0 0 8px #FFD700;
+            animation: textFade 2s ease-in-out infinite alternate;
         }
 
-        .skip-btn {
-            margin-top: 20px;
-            padding: 8px 20px;
-            background: #FFD700;
-            color: #1D3557;
-            border: none;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
+        /* 动画关键帧 - 简洁流畅 */
+        @keyframes treeSway1 {
+            0% { transform: rotate(-8deg); }
+            100% { transform: rotate(8deg); }
         }
 
-        @keyframes treeSway {
-            from { transform: rotate(-10deg); }
-            to { transform: rotate(10deg); }
+        @keyframes treeSway2 {
+            0% { transform: rotate(8deg); }
+            100% { transform: rotate(-8deg); }
         }
 
         @keyframes giftBounce {
-            from { transform: translateY(0); }
-            to { transform: translateY(-15px); }
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-20px); }
         }
 
-        @keyframes textPulse {
-            from { opacity: 0.7; transform: scale(1); }
-            to { opacity: 1; transform: scale(1.05); }
+        @keyframes textFade {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
         }
 
+        /* 雪花效果 */
         #snowContainer {
             position: fixed;
             top: 0;
@@ -118,6 +128,7 @@
             100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
         }
 
+        /* 标题 */
         h1 {
             font-size: 28px;
             color: #FFD700;
@@ -128,6 +139,7 @@
             position: relative;
         }
 
+        /* 游戏容器 */
         .game-box {
             width: 320px;
             height: 320px;
@@ -145,25 +157,26 @@
             display: block;
         }
 
-        /* 强制显示提示语 */
+        /* 撞墙提示语 */
         #gameTip {
-            position: absolute !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            font-size: 16px !important;
-            color: #E63946 !important;
-            font-weight: bold !important;
-            text-align: center !important;
-            background: rgba(241, 250, 238, 0.95) !important;
-            padding: 15px 20px !important;
-            border-radius: 10px !important;
-            border: 2px solid #FFD700 !important;
-            z-index: 3 !important;
-            display: none !important;
-            width: 80% !important;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 16px;
+            color: #E63946;
+            font-weight: bold;
+            text-align: center;
+            background: rgba(241, 250, 238, 0.95);
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+            z-index: 3;
+            display: none;
+            width: 80%;
         }
 
+        /* 分数面板 */
         .score-box {
             font-size: 20px;
             color: #F1FAEE;
@@ -176,6 +189,7 @@
             position: relative;
         }
 
+        /* 方向按钮 */
         .controls {
             display: grid;
             grid-template-columns: 60px 60px 60px;
@@ -210,6 +224,7 @@
         .down { grid-column: 2; grid-row: 2; }
         .right { grid-column: 3; grid-row: 2; }
 
+        /* 功能按钮 */
         .func-btn {
             padding: 10px 25px;
             border: none;
@@ -227,6 +242,7 @@
             background: #E63946;
         }
 
+        /* 祝福弹窗 */
         #blessingModal {
             position: fixed;
             top: 0;
@@ -293,30 +309,33 @@
     </style>
 </head>
 <body>
-    <!-- 加载动画 - 强制显示 -->
+    <!-- 轻量级加载动画 -->
     <div id="loadingScreen">
-        <div class="christmas-loader">
-            <div class="loader-tree">🎄</div>
-            <div class="loader-gift">🎁</div>
-            <div class="loader-tree">🎄</div>
+        <div class="loader-wrapper">
+            <div class="loader-item loader-tree1">🎄</div>
+            <div class="loader-item loader-gift">🎁</div>
+            <div class="loader-item loader-tree2">🎄</div>
         </div>
         <div class="loading-text">圣诞祝福加载中...</div>
-        <button class="skip-btn" id="skipBtn">点击跳过</button>
     </div>
 
     <!-- 雪花容器 -->
     <div id="snowContainer"></div>
 
+    <!-- 游戏标题 -->
     <h1>🎄 圣诞贪吃蛇 🎄</h1>
 
+    <!-- 游戏主容器 -->
     <div class="game-box">
         <canvas id="gameCanvas" width="320" height="320"></canvas>
-        <!-- 提示语容器 - 强制渲染 -->
-        <div id="gameTip" style="display: none !important;">加油亲爱的！再接再厉，只需要吃5个就有彩蛋哦！</div>
+        <!-- 撞墙提示语 -->
+        <div id="gameTip">加油亲爱的！再接再厉，只需要吃5个就有彩蛋哦！</div>
     </div>
 
+    <!-- 分数显示 -->
     <div class="score-box">分数: <span id="scoreNum">0</span> (目标: 5个礼物)</div>
 
+    <!-- 方向控制按钮 -->
     <div class="controls">
         <button class="btn up">↑</button>
         <button class="btn left">←</button>
@@ -324,11 +343,13 @@
         <button class="btn right">→</button>
     </div>
 
+    <!-- 功能按钮 -->
     <div>
         <button class="func-btn" id="pauseBtn">暂停/继续</button>
         <button class="func-btn" id="restartBtn">重新开始</button>
     </div>
 
+    <!-- 圣诞祝福弹窗 -->
     <div id="blessingModal">
         <div class="blessing-card">
             <h2>🎄 恭喜吃到5个礼物！🎄</h2>
@@ -338,14 +359,12 @@
     </div>
 
     <script>
-        // 强制立即执行代码 - 不等待任何加载
-        (function() {
-            // ========== 强制获取元素 ==========
+        window.onload = function() {
+            // ========== 核心元素获取 ==========
             const loadingScreen = document.getElementById('loadingScreen');
-            const skipBtn = document.getElementById('skipBtn');
-            const gameTip = document.getElementById('gameTip');
             const canvas = document.getElementById('gameCanvas');
             const ctx = canvas.getContext('2d');
+            const gameTip = document.getElementById('gameTip');
             const scoreNum = document.getElementById('scoreNum');
             const pauseBtn = document.getElementById('pauseBtn');
             const restartBtn = document.getElementById('restartBtn');
@@ -353,10 +372,10 @@
             const closeModal = document.getElementById('closeModal');
             const snowContainer = document.getElementById('snowContainer');
 
-            // ========== 游戏核心变量 ==========
+            // ========== 游戏配置 ==========
             const grid = 20;
             const tileCount = canvas.width / grid;
-            let snake = [{x:4,y:8},{x:3,y:8},{x:2,y:8}];
+            let snake = [{x:4,y:8}, {x:3,y:8}, {x:2,y:8}];
             let food = {x:10,y:8};
             let direction = 'right';
             let nextDir = 'right';
@@ -366,27 +385,34 @@
             let isPaused = false;
             let giftCount = 0;
 
-            // ========== 强制显示加载动画 ==========
-            // 自动跳过（3秒）
-            setTimeout(() => {
+            // ========== 加载动画控制 - 双重保险机制 ==========
+            // 1. 自动关闭（2.5秒，动画播放1-2次后）
+            const loadTimeout = setTimeout(() => {
                 hideLoading();
-            }, 3000);
+            }, 2500);
 
-            // 手动跳过
-            skipBtn.addEventListener('click', hideLoading);
+            // 2. 手动关闭（防止自动关闭失效）
+            loadingScreen.addEventListener('click', hideLoading);
 
+            // 隐藏加载动画的函数
             function hideLoading() {
-                loadingScreen.style.display = 'none';
-                // 立即创建雪花
-                createSnow();
-                setInterval(createSnow, 300);
-                // 立即初始化游戏
+                clearTimeout(loadTimeout); // 清除超时器，避免重复执行
+                loadingScreen.classList.add('hidden'); // 添加隐藏类
+                // 加载完成后初始化游戏和雪花
+                initSnow();
                 initGame();
-                // 绑定事件
-                bindAllEvents();
             }
 
-            // ========== 雪花生成 ==========
+            // ========== 雪花初始化 ==========
+            function initSnow() {
+                // 先生成一批雪花
+                for(let i=0; i<20; i++) {
+                    createSnow();
+                }
+                // 定时补充雪花
+                setInterval(createSnow, 300);
+            }
+
             function createSnow() {
                 const snow = document.createElement('div');
                 snow.className = 'snowflake';
@@ -406,7 +432,7 @@
 
             // ========== 游戏初始化 ==========
             function initGame() {
-                snake = [{x:4,y:8},{x:3,y:8},{x:2,y:8}];
+                snake = [{x:4,y:8}, {x:3,y:8}, {x:2,y:8}];
                 food = getRandomFood();
                 direction = 'right';
                 nextDir = 'right';
@@ -414,7 +440,7 @@
                 giftCount = 0;
                 isPaused = false;
                 scoreNum.textContent = score;
-                gameTip.style.display = 'none'; // 强制隐藏
+                gameTip.style.display = 'none';
 
                 if (gameLoop) clearInterval(gameLoop);
                 gameLoop = setInterval(updateGame, gameSpeed);
@@ -424,10 +450,10 @@
             // ========== 随机食物 ==========
             function getRandomFood() {
                 let newFood;
-                while (!newFood || snake.some(s => s.x === newFood.x && s.y === newFood.y)) {
+                while (!newFood || snake.some(seg => seg.x === newFood.x && seg.y === newFood.y)) {
                     newFood = {
-                        x: Math.floor(Math.random() * (tileCount-2)) + 1,
-                        y: Math.floor(Math.random() * (tileCount-2)) + 1
+                        x: Math.floor(Math.random() * (tileCount - 2)) + 1,
+                        y: Math.floor(Math.random() * (tileCount - 2)) + 1
                     };
                 }
                 return newFood;
@@ -448,18 +474,17 @@
 
                 snake.unshift(head);
 
-                // 强制触发撞墙提示
+                // 撞墙/撞自己检测
                 if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
-                    gameTip.style.display = 'block'; // 强制显示提示语
+                    gameTip.style.display = 'block';
                     clearInterval(gameLoop);
                     isPaused = true;
                     return;
                 }
 
-                // 撞自己也显示同样提示
                 for (let i=1; i<snake.length; i++) {
                     if (head.x === snake[i].x && head.y === snake[i].y) {
-                        gameTip.style.display = 'block'; // 强制显示提示语
+                        gameTip.style.display = 'block';
                         clearInterval(gameLoop);
                         isPaused = true;
                         return;
@@ -531,44 +556,42 @@
                 });
             }
 
-            // ========== 绑定所有事件 ==========
-            function bindAllEvents() {
-                // 方向按钮
-                document.querySelector('.btn.up').onclick = () => {
-                    if (direction !== 'down') nextDir = 'up';
-                };
-                document.querySelector('.btn.down').onclick = () => {
-                    if (direction !== 'up') nextDir = 'down';
-                };
-                document.querySelector('.btn.left').onclick = () => {
-                    if (direction !== 'right') nextDir = 'left';
-                };
-                document.querySelector('.btn.right').onclick = () => {
-                    if (direction !== 'left') nextDir = 'right';
-                };
+            // ========== 事件绑定 ==========
+            // 方向按钮
+            document.querySelector('.btn.up').onclick = () => {
+                if (direction !== 'down') nextDir = 'up';
+            };
+            document.querySelector('.btn.down').onclick = () => {
+                if (direction !== 'up') nextDir = 'down';
+            };
+            document.querySelector('.btn.left').onclick = () => {
+                if (direction !== 'right') nextDir = 'left';
+            };
+            document.querySelector('.btn.right').onclick = () => {
+                if (direction !== 'left') nextDir = 'right';
+            };
 
-                // 暂停按钮
-                pauseBtn.onclick = () => {
-                    if (giftCount === 5) return;
-                    isPaused = !isPaused;
-                    if (isPaused) {
-                        gameTip.style.display = 'block';
-                        gameTip.textContent = '游戏已暂停';
-                    } else {
-                        gameTip.style.display = 'none';
-                    }
-                };
+            // 暂停按钮
+            pauseBtn.onclick = () => {
+                if (giftCount === 5) return;
+                isPaused = !isPaused;
+                if (isPaused) {
+                    gameTip.style.display = 'block';
+                    gameTip.textContent = '游戏已暂停';
+                } else {
+                    gameTip.style.display = 'none';
+                }
+            };
 
-                // 重新开始
-                restartBtn.onclick = initGame;
+            // 重新开始
+            restartBtn.onclick = initGame;
 
-                // 关闭祝福
-                closeModal.onclick = () => {
-                    blessingModal.style.display = 'none';
-                    initGame();
-                };
-            }
-        })();
+            // 关闭祝福
+            closeModal.onclick = () => {
+                blessingModal.style.display = 'none';
+                initGame();
+            };
+        };
     </script>
 </body>
 </html>
