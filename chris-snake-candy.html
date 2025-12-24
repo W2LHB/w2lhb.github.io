@@ -24,15 +24,15 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* 全局雪花背景容器 */
+        /* 全局雪花背景容器 - 修复层级问题 */
         .snow-container {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             pointer-events: none;
-            z-index: -1;
+            z-index: 1;
         }
 
         body {
@@ -42,11 +42,11 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            /* 圣诞渐变背景 */
             background: linear-gradient(135deg, var(--christmas-blue) 0%, #0B132B 100%);
             padding: 20px 0;
             overflow-x: hidden;
             position: relative;
+            z-index: 0;
         }
 
         h1 {
@@ -55,6 +55,7 @@
             margin-bottom: 15px;
             text-shadow: 0 0 10px var(--christmas-gold), 0 2px 4px rgba(0,0,0,0.3);
             text-align: center;
+            z-index: 2;
         }
 
         .game-container {
@@ -64,8 +65,10 @@
             height: 90vw;
             max-height: 400px;
             margin-bottom: 20px;
+            z-index: 2;
         }
 
+        /* 修复画布渲染问题 */
         canvas {
             width: 100%;
             height: 100%;
@@ -73,6 +76,8 @@
             background-color: var(--christmas-white);
             border-radius: 16px;
             box-shadow: var(--shadow);
+            display: block;
+            z-index: 2;
         }
 
         .score-panel {
@@ -85,6 +90,8 @@
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(5px);
             border: 1px solid var(--christmas-gold);
+            z-index: 2;
+            position: relative;
         }
 
         .control-tips {
@@ -93,6 +100,8 @@
             text-align: center;
             margin-bottom: 15px;
             opacity: 0.8;
+            z-index: 2;
+            position: relative;
         }
 
         /* 游戏结束提示 */
@@ -111,13 +120,13 @@
             z-index: 5;
         }
 
-        /* 圣诞彩蛋弹窗（升级版本） */
+        /* 圣诞彩蛋弹窗 */
         .christmas-egg {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background: radial-gradient(ellipse at center, rgba(25, 29, 61, 0.98) 0%, rgba(0, 0, 0, 0.98) 100%);
             display: none;
             flex-direction: column;
@@ -234,12 +243,14 @@
             animation: santaFly 10s linear infinite;
         }
 
-        /* 全局雪花样式 */
+        /* 全局雪花样式 - 修复显示问题 */
         .global-snowflake {
             position: absolute;
             z-index: 1;
             animation: globalSnowfall linear infinite;
             filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+            font-size: 16px;
+            opacity: 0.8;
         }
 
         /* 弹窗雪花样式 */
@@ -305,6 +316,8 @@
             touch-action: manipulation;
             box-shadow: var(--shadow);
             transition: all 0.3s;
+            z-index: 2;
+            position: relative;
         }
 
         .restart-btn:hover {
@@ -323,7 +336,7 @@
             z-index: 5;
         }
 
-        /* 方向按钮样式（圣诞配色） */
+        /* 方向按钮样式 */
         .control-buttons {
             display: grid;
             grid-template-areas:
@@ -331,6 +344,8 @@
                 "left down right";
             gap: 10px;
             margin-bottom: 20px;
+            z-index: 2;
+            position: relative;
         }
 
         .dir-btn {
@@ -372,6 +387,8 @@
             margin-bottom: 15px;
             box-shadow: var(--shadow);
             transition: all 0.2s;
+            z-index: 2;
+            position: relative;
         }
 
         .pause-btn:active {
@@ -380,7 +397,7 @@
             transform: scale(0.95);
         }
 
-        /* 彩蛋关闭按钮（升级） */
+        /* 彩蛋关闭按钮 */
         .close-egg {
             padding: 12px 30px;
             font-size: 16px;
@@ -427,14 +444,11 @@
     
     <button class="restart-btn" id="restartBtn">重新开始</button>
 
-    <!-- 圣诞彩蛋弹窗（升级为祝福卡片） -->
+    <!-- 圣诞彩蛋弹窗 -->
     <div class="christmas-egg" id="christmasEgg">
-        <!-- 星光背景 -->
         <div class="star-bg" id="starBg"></div>
-        <!-- 圣诞装饰 -->
         <div class="christmas-deco christmas-tree">🎄</div>
         <div class="christmas-deco santa">🎅</div>
-        <!-- 祝福卡片 -->
         <div class="blessing-card">
             <div class="christmas-text">
                 <h2>🎄恭喜吃到5个食物！🎄</h2>
@@ -444,13 +458,12 @@
         <button class="close-egg" id="closeEgg">收下祝福</button>
     </div>
 
-    <!-- 圣诞背景音乐 -->
     <audio id="christmasMusic" loop preload="auto">
         <source src="https://music.163.com/song/media/outer/url?id=186037.mp3" type="audio/mpeg">
-    </audio>
+    
     <audio id="successSound" preload="auto">
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3" type="audio/mpeg">
-    </audio>
+    
 
     <script>
         // 获取元素
@@ -470,12 +483,11 @@
         const starBg = document.getElementById('starBg');
         const globalSnowContainer = document.getElementById('globalSnowContainer');
 
-        // 适配手机屏幕的画布尺寸
-        let gridSize = 20;
+        // 游戏核心变量 - 修复画布尺寸计算
+        let gridSize = 25; // 增大格子尺寸，避免渲染过细
         let tileCount;
         let canvasSize;
 
-        // 游戏状态
         let snake = [];
         let food = {};
         let direction = 'right';
@@ -488,36 +500,33 @@
         let foodEatenCount = 0;
         const targetFoodCount = 5;
 
-        // 雪花定时器
         let globalSnowInterval;
         let modalSnowInterval;
 
-        // 页面加载时创建全局雪花
-        window.addEventListener('load', () => {
-            initGame();
-            createGlobalSnowflakes();
-            // 微信浏览器音频适配
-            document.body.addEventListener('click', () => {
-                christmasMusic.play().catch(err => console.log('微信需要用户交互播放音乐'));
-            }, { once: true });
-        });
-
-        // 初始化画布尺寸
-        function initCanvasSize() {
-            canvasSize = gameContainer.clientWidth;
+        // 页面加载后立即执行 - 修复执行顺序问题
+        window.onload = function() {
+            // 强制初始化画布尺寸
+            canvasSize = gameContainer.clientWidth || 300;
             canvas.width = canvasSize;
             canvas.height = canvasSize;
             tileCount = Math.floor(canvasSize / gridSize);
-            gridSize = canvasSize / tileCount;
+            
+            initGame();
+            // 立即创建雪花
+            createGlobalSnowflakes();
+            // 微信音频适配
+            document.body.addEventListener('click', () => {
+                christmasMusic.play().catch(err => console.log('微信需点击后播放音乐'));
+            }, { once: true });
         }
 
-        // 初始化游戏
+        // 初始化游戏 - 修复蛇和食物渲染
         function initGame() {
-            initCanvasSize();
+            // 重置蛇的初始位置，确保在画布内
             snake = [
-                { x: tileCount / 2, y: tileCount / 2 },
-                { x: tileCount / 2 - 1, y: tileCount / 2 },
-                { x: tileCount / 2 - 2, y: tileCount / 2 }
+                { x: 3, y: 3 },
+                { x: 2, y: 3 },
+                { x: 1, y: 3 }
             ];
             direction = 'right';
             nextDirection = 'right';
@@ -528,29 +537,30 @@
             gameOverEl.style.display = 'none';
             pauseTip.style.display = 'none';
             christmasEgg.style.display = 'none';
+            
             generateFood();
             if (gameLoop) clearInterval(gameLoop);
             gameLoop = setInterval(gameUpdate, gameSpeed);
             isPaused = false;
-            // 清除弹窗雪花和星光
+            
             clearModalSnowflakes();
             clearStars();
+            // 强制绘制一帧
+            drawGame();
         }
 
-        // 生成食物
+        // 生成食物 - 确保位置有效
         function generateFood() {
             food = {
-                x: Math.floor(Math.random() * tileCount),
-                y: Math.floor(Math.random() * tileCount)
+                x: Math.floor(Math.random() * (tileCount - 2)) + 1,
+                y: Math.floor(Math.random() * (tileCount - 2)) + 1
             };
-            snake.forEach(segment => {
-                if (segment.x === food.x && segment.y === food.y) {
-                    generateFood();
-                }
-            });
+            // 避免食物生成在蛇身上
+            const isOnSnake = snake.some(seg => seg.x === food.x && seg.y === food.y);
+            if (isOnSnake) generateFood();
         }
 
-        // 游戏更新
+        // 游戏更新逻辑
         function gameUpdate() {
             if (isPaused) return;
             direction = getValidDirection(nextDirection);
@@ -577,7 +587,7 @@
                 }
             }
 
-            // 吃食物
+            // 吃食物逻辑
             if (head.x === food.x && head.y === food.y) {
                 score += 10;
                 foodEatenCount++;
@@ -598,53 +608,57 @@
             drawGame();
         }
 
-        // 绘制游戏
+        // 修复绘制函数 - 确保蛇和食物清晰可见
         function drawGame() {
+            // 1. 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = var(--christmas-white);
-            ctx.fillRect(0, 0, canvasSize, canvasSize);
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // 绘制网格
-            ctx.strokeStyle = '#eee';
-            for (let i = 0; i < tileCount; i++) {
+            // 2. 绘制网格 - 辅助定位
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= tileCount; i++) {
                 ctx.beginPath();
                 ctx.moveTo(i * gridSize, 0);
-                ctx.lineTo(i * gridSize, canvasSize);
+                ctx.lineTo(i * gridSize, canvas.height);
                 ctx.stroke();
                 ctx.beginPath();
                 ctx.moveTo(0, i * gridSize);
-                ctx.lineTo(canvasSize, i * gridSize);
+                ctx.lineTo(canvas.width, i * gridSize);
                 ctx.stroke();
             }
 
-            // 绘制食物（圣诞礼物）
+            // 3. 绘制食物（圣诞礼物）- 放大显示
             ctx.fillStyle = var(--christmas-red);
             ctx.beginPath();
-            ctx.arc(food.x * gridSize + gridSize/2, food.y * gridSize + gridSize/2, gridSize/2 - 2, 0, Math.PI*2);
+            ctx.roundRect(food.x * gridSize + 2, food.y * gridSize + 2, gridSize - 4, gridSize - 4, 4);
             ctx.fill();
-            ctx.strokeStyle = var(--christmas-green);
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            ctx.lineWidth = 1;
             // 礼物图标
             ctx.fillStyle = var(--christmas-gold);
-            ctx.font = `${gridSize - 8}px Arial`;
+            ctx.font = `${gridSize - 5}px Arial`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText('🎁', food.x * gridSize + gridSize/2, food.y * gridSize + gridSize/2);
 
-            // 绘制蛇（圣诞配色）
+            // 4. 绘制蛇 - 加粗蛇身，区分蛇头蛇尾
             snake.forEach((segment, index) => {
-                ctx.fillStyle = index === 0 ? var(--christmas-green) : '#81B29A';
-                ctx.beginPath();
-                ctx.roundRect(segment.x * gridSize + 1, segment.y * gridSize + 1, gridSize - 2, gridSize - 2, 4);
-                ctx.fill();
-                // 蛇头圣诞装饰
                 if (index === 0) {
-                    ctx.fillStyle = var(--christmas-gold);
+                    // 蛇头 - 绿色+圆角+眼睛
+                    ctx.fillStyle = var(--christmas-green);
                     ctx.beginPath();
-                    ctx.moveTo(segment.x * gridSize + gridSize/2, segment.y * gridSize + 5);
-                    ctx.lineTo(segment.x * gridSize + gridSize/2 - 3, segment.y * gridSize + 10);
-                    ctx.lineTo(segment.x * gridSize + gridSize/2 + 3, segment.y * gridSize + 10);
+                    ctx.roundRect(segment.x * gridSize + 2, segment.y * gridSize + 2, gridSize - 4, gridSize - 4, 8);
+                    ctx.fill();
+                    // 蛇眼
+                    ctx.fillStyle = 'white';
+                    ctx.beginPath();
+                    ctx.arc(segment.x * gridSize + gridSize - 10, segment.y * gridSize + 8, 3, 0, Math.PI*2);
+                    ctx.fill();
+                } else {
+                    // 蛇身 - 浅绿
+                    ctx.fillStyle = '#81B29A';
+                    ctx.beginPath();
+                    ctx.roundRect(segment.x * gridSize + 2, segment.y * gridSize + 2, gridSize - 4, gridSize - 4, 4);
                     ctx.fill();
                 }
             });
@@ -666,72 +680,59 @@
             christmasMusic.pause();
         }
 
-        // 显示圣诞彩蛋
+        // 显示祝福弹窗
         function showChristmasEgg() {
             isEggShown = true;
             isPaused = true;
             christmasEgg.style.display = 'flex';
-            // 播放音效
             successSound.play();
-            christmasMusic.play().catch(err => {
-                christmasEgg.addEventListener('click', () => {
-                    christmasMusic.play();
-                }, { once: true });
-            });
-            // 创建星光背景
+            christmasMusic.play().catch(err => {});
             createStars();
-            // 持续创建弹窗雪花
             createModalSnowflakes();
             modalSnowInterval = setInterval(createModalSnowflakes, 100);
         }
 
-        // ---------------------- 视觉效果核心功能 ----------------------
-        // 创建全局雪花背景
+        // ---------------------- 修复雪花生成逻辑 ----------------------
         function createGlobalSnowflakes() {
-            globalSnowInterval = setInterval(() => {
-                const snowTypes = ['snow1', 'snow2', 'snow3', 'snow4', 'snow5'];
-                const snowflake = document.createElement('div');
-                const snowType = snowTypes[Math.floor(Math.random() * snowTypes.length)];
-                snowflake.classList.add('global-snowflake', snowType);
-                // 随机位置和样式
-                snowflake.style.left = `${Math.random() * 100}vw`;
-                snowflake.style.top = '-20px';
-                snowflake.style.fontSize = `${Math.random() * 15 + 10}px`;
-                snowflake.style.animationDuration = `${Math.random() * 20 + 10}s`;
-                snowflake.style.animationDelay = `${Math.random() * 5}s`;
-                snowflake.style.opacity = Math.random() * 0.8 + 0.2;
-                globalSnowContainer.appendChild(snowflake);
-                // 雪花消失后移除
-                setTimeout(() => {
-                    snowflake.remove();
-                }, 25000);
-            }, 500);
+            // 立即生成一批雪花
+            for(let i=0; i<30; i++){
+                addGlobalSnowflake();
+            }
+            // 定时生成新雪花
+            globalSnowInterval = setInterval(addGlobalSnowflake, 300);
         }
 
-        // 创建弹窗雪花
+        function addGlobalSnowflake() {
+            const snowTypes = ['snow1', 'snow2', 'snow3', 'snow4', 'snow5'];
+            const snowflake = document.createElement('div');
+            const snowType = snowTypes[Math.floor(Math.random() * snowTypes.length)];
+            snowflake.classList.add('global-snowflake', snowType);
+            // 随机位置和速度
+            snowflake.style.left = `${Math.random() * 100}vw`;
+            snowflake.style.top = '-20px';
+            snowflake.style.fontSize = `${Math.random() * 10 + 10}px`;
+            snowflake.style.animationDuration = `${Math.random() * 15 + 10}s`;
+            snowflake.style.opacity = Math.random() * 0.7 + 0.3;
+            globalSnowContainer.appendChild(snowflake);
+            // 自动移除
+            setTimeout(() => snowflake.remove(), 20000);
+        }
+
         function createModalSnowflakes() {
             const snowTypes = ['snow1', 'snow2', 'snow3', 'snow4', 'snow5'];
-            const snowCount = 20;
-            const container = christmasEgg;
-
-            for (let i = 0; i < snowCount; i++) {
+            for(let i=0; i<15; i++){
                 const snowflake = document.createElement('div');
                 const snowType = snowTypes[Math.floor(Math.random() * snowTypes.length)];
                 snowflake.classList.add('modal-snowflake', snowType);
                 snowflake.style.left = `${Math.random() * 100}%`;
                 snowflake.style.top = '-10px';
-                snowflake.style.fontSize = `${Math.random() * 20 + 10}px`;
+                snowflake.style.fontSize = `${Math.random() * 15 + 10}px`;
                 snowflake.style.animationDuration = `${Math.random() * 10 + 5}s`;
-                snowflake.style.animationDelay = `${Math.random() * 5}s`;
-                snowflake.style.opacity = Math.random() * 0.8 + 0.2;
-                container.appendChild(snowflake);
-                setTimeout(() => {
-                    snowflake.remove();
-                }, 15000);
+                christmasEgg.appendChild(snowflake);
+                setTimeout(() => snowflake.remove(), 15000);
             }
         }
 
-        // 星光背景创建
         function createStars() {
             const starCount = 80;
             for (let i = 0; i < starCount; i++) {
@@ -744,17 +745,14 @@
                 star.style.left = `${Math.random() * 100}%`;
                 star.style.top = `${Math.random() * 100}%`;
                 star.style.animation = `starTwinkle ${Math.random() * 3 + 2}s ease-in-out infinite`;
-                star.style.animationDelay = `${Math.random() * 3}s`;
                 starBg.appendChild(star);
             }
         }
 
-        // 清除星光
         function clearStars() {
             starBg.innerHTML = '';
         }
 
-        // 清除弹窗雪花
         function clearModalSnowflakes() {
             clearInterval(modalSnowInterval);
             document.querySelectorAll('.modal-snowflake').forEach(s => s.remove());
@@ -762,7 +760,7 @@
 
         // CSS变量获取函数
         function var(name) {
-            return getComputedStyle(document.documentElement).getPropertyValue(name);
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
         }
 
         // ---------------------- 事件绑定 ----------------------
@@ -788,7 +786,14 @@
             christmasMusic.play();
         });
 
-        window.addEventListener('resize', initGame);
+        // 窗口大小变化时重新初始化
+        window.addEventListener('resize', () => {
+            canvasSize = gameContainer.clientWidth;
+            canvas.width = canvasSize;
+            canvas.height = canvasSize;
+            tileCount = Math.floor(canvasSize / gridSize);
+            initGame();
+        });
     </script>
 </body>
 </html>
