@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <title>手机版贪吃蛇</title>
+    <title>贪吃蛇（按钮版）</title>
     <style>
         * {
             margin: 0;
@@ -17,13 +17,14 @@
 
         body {
             width: 100vw;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             background-color: #f5f5f5;
-            overflow: hidden;
+            padding: 20px 0;
+            overflow-x: hidden;
         }
 
         h1 {
@@ -38,6 +39,7 @@
             max-width: 400px;
             height: 90vw;
             max-height: 400px;
+            margin-bottom: 20px;
         }
 
         canvas {
@@ -49,7 +51,7 @@
         }
 
         .score-panel {
-            margin: 15px 0;
+            margin: 10px 0;
             font-size: 20px;
             color: #333;
         }
@@ -58,7 +60,7 @@
             font-size: 14px;
             color: #666;
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .game-over {
@@ -81,7 +83,7 @@
             border: none;
             border-radius: 20px;
             cursor: pointer;
-            margin-top: 10px;
+            margin-bottom: 20px;
             touch-action: manipulation;
         }
 
@@ -98,17 +100,87 @@
             color: #666;
             display: none;
         }
+
+        /* 方向按钮样式 */
+        .control-buttons {
+            display: grid;
+            grid-template-areas:
+                ". up ."
+                "left down right";
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .dir-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background-color: #4299e1;
+            color: #fff;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .dir-btn:active {
+            background-color: #3182ce;
+            transform: scale(0.95);
+        }
+
+        .up {
+            grid-area: up;
+        }
+
+        .down {
+            grid-area: down;
+        }
+
+        .left {
+            grid-area: left;
+        }
+
+        .right {
+            grid-area: right;
+        }
+
+        /* 暂停按钮 */
+        .pause-btn {
+            padding: 6px 15px;
+            font-size: 14px;
+            background-color: #9f7aea;
+            color: #fff;
+            border: none;
+            border-radius: 15px;
+            touch-action: manipulation;
+            margin-bottom: 10px;
+        }
+
+        .pause-btn:active {
+            background-color: #805ad5;
+        }
     </style>
 </head>
 <body>
-    <h1>贪吃蛇</h1>
+    <h1>贪吃蛇（按钮版）</h1>
     <div class="game-container">
         <canvas id="gameCanvas"></canvas>
         <div class="game-over" id="gameOver">游戏结束</div>
         <div class="pause-tip" id="pauseTip">已暂停</div>
     </div>
     <div class="score-panel">分数: <span id="score">0</span></div>
-    <div class="control-tips">滑动屏幕控制方向 | 点击屏幕暂停/继续</div>
+    <div class="control-tips">点击方向按钮控制移动</div>
+    <button class="pause-btn" id="pauseBtn">暂停/继续</button>
+    <!-- 方向控制按钮 -->
+    <div class="control-buttons">
+        <button class="dir-btn up">↑</button>
+        <button class="dir-btn left">←</button>
+        <button class="dir-btn down">↓</button>
+        <button class="dir-btn right">→</button>
+    </div>
     <button class="restart-btn" id="restartBtn">重新开始</button>
 
     <script>
@@ -119,6 +191,8 @@
         const pauseTip = document.getElementById('pauseTip');
         const scoreEl = document.getElementById('score');
         const restartBtn = document.getElementById('restartBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const dirButtons = document.querySelectorAll('.dir-btn');
 
         // 适配手机屏幕的画布尺寸
         const gameContainer = document.querySelector('.game-container');
@@ -135,9 +209,6 @@
         let gameSpeed = 200;
         let gameLoop;
         let isPaused = false;
-        // 触屏相关
-        let touchStartX = 0;
-        let touchStartY = 0;
 
         // 初始化画布尺寸
         function initCanvasSize() {
@@ -299,44 +370,25 @@
             gameOverEl.style.display = 'block';
         }
 
-        // 触屏滑动控制
-        function handleTouchStart(e) {
-            // 记录触摸起始位置
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-        }
+        // 绑定方向按钮事件
+        dirButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (isPaused || gameOverEl.style.display === 'block') return;
+                const dir = btn.classList[1]; // 获取up/down/left/right类名
+                nextDirection = dir;
+            });
+        });
 
-        function handleTouchEnd(e) {
-            if (isPaused || gameOverEl.style.display === 'block') return;
-            // 计算滑动距离
-            const touchEndX = e.changedTouches[0].clientX;
-            const touchEndY = e.changedTouches[0].clientY;
-            const diffX = touchEndX - touchStartX;
-            const diffY = touchEndY - touchStartY;
-
-            // 判断滑动方向（优先水平/垂直）
-            if (Math.abs(diffX) > Math.abs(diffY)) {
-                nextDirection = diffX > 0 ? 'right' : 'left';
-            } else {
-                nextDirection = diffY > 0 ? 'down' : 'up';
-            }
-        }
-
-        // 点击屏幕暂停/继续
-        function handleCanvasClick() {
+        // 暂停/继续按钮事件
+        pauseBtn.addEventListener('click', () => {
             if (gameOverEl.style.display === 'block') return;
             isPaused = !isPaused;
             pauseTip.style.display = isPaused ? 'block' : 'none';
-        }
+        });
 
-        // 事件监听
-        // 触屏滑动
-        canvas.addEventListener('touchstart', handleTouchStart);
-        canvas.addEventListener('touchend', handleTouchEnd);
-        // 点击暂停
-        canvas.addEventListener('click', handleCanvasClick);
-        // 重新开始
+        // 重新开始按钮事件
         restartBtn.addEventListener('click', initGame);
+
         // 窗口大小变化时重新适配
         window.addEventListener('resize', initGame);
 
