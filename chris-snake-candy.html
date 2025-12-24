@@ -25,85 +25,87 @@
             position: relative;
         }
 
-        /* 轻量级加载动画 - 纯CSS实现，无JS依赖 */
-        #loadingScreen {
+        /* 加载画面 - 绝对定位，点击穿透备用 */
+        #loader {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: #1D3557;
+            z-index: 9999;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 100;
-            /* 加载完成后自动隐藏的过渡效果 */
-            transition: opacity 0.6s ease, visibility 0.6s ease;
+            /* 强制显示动画 */
+            animation: none !important;
         }
 
-        /* 加载完成后的状态 */
-        #loadingScreen.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
+        /* 圣诞动画元素 */
+        .loader-content {
+            text-align: center;
         }
 
-        /* 圣诞加载动画元素 */
-        .loader-wrapper {
+        .trees {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 35px;
+            gap: 20px;
+            margin-bottom: 25px;
         }
 
-        .loader-item {
+        .tree {
             font-size: 50px;
-            margin: 0 15px;
+            animation: sway 2s ease-in-out infinite alternate;
         }
 
-        .loader-tree1 {
-            animation: treeSway1 2s ease-in-out infinite alternate;
+        .tree:nth-child(1) {
+            animation-delay: 0.2s;
         }
 
-        .loader-gift {
-            animation: giftBounce 1.8s ease-in-out infinite alternate;
+        .tree:nth-child(3) {
+            animation-delay: 0.4s;
+            animation-direction: alternate-reverse;
         }
 
-        .loader-tree2 {
-            animation: treeSway2 2s ease-in-out infinite alternate;
+        .gift {
+            font-size: 40px;
+            animation: bounce 1.5s ease-in-out infinite alternate;
         }
 
-        .loading-text {
+        .load-text {
             color: #FFD700;
             font-size: 22px;
-            text-shadow: 0 0 8px #FFD700;
-            animation: textFade 2s ease-in-out infinite alternate;
+            text-shadow: 0 0 10px #FFD700;
+            animation: fade 2s ease-in-out infinite alternate;
         }
 
-        /* 动画关键帧 - 简洁流畅 */
-        @keyframes treeSway1 {
-            0% { transform: rotate(-8deg); }
-            100% { transform: rotate(8deg); }
+        .click-hint {
+            color: #fff;
+            font-size: 14px;
+            margin-top: 15px;
+            opacity: 0.7;
         }
 
-        @keyframes treeSway2 {
-            0% { transform: rotate(8deg); }
-            100% { transform: rotate(-8deg); }
+        /* 动画效果 */
+        @keyframes sway {
+            from { transform: rotate(-8deg); }
+            to { transform: rotate(8deg); }
         }
 
-        @keyframes giftBounce {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-20px); }
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-20px); }
         }
 
-        @keyframes textFade {
-            0% { opacity: 0.7; }
-            100% { opacity: 1; }
+        @keyframes fade {
+            from { opacity: 0.7; }
+            to { opacity: 1; }
         }
 
         /* 雪花效果 */
-        #snowContainer {
+        #snow {
             position: fixed;
             top: 0;
             left: 0;
@@ -119,7 +121,6 @@
             font-size: 16px;
             opacity: 0.8;
             pointer-events: none;
-            z-index: 1;
             animation: snowfall linear infinite;
         }
 
@@ -128,18 +129,16 @@
             100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
         }
 
-        /* 标题 */
+        /* 游戏样式 */
         h1 {
             font-size: 28px;
             color: #FFD700;
             margin-bottom: 20px;
             text-shadow: 0 0 10px #FFD700;
-            text-align: center;
             z-index: 2;
             position: relative;
         }
 
-        /* 游戏容器 */
         .game-box {
             width: 320px;
             height: 320px;
@@ -157,7 +156,6 @@
             display: block;
         }
 
-        /* 撞墙提示语 */
         #gameTip {
             position: absolute;
             top: 50%;
@@ -176,7 +174,6 @@
             width: 80%;
         }
 
-        /* 分数面板 */
         .score-box {
             font-size: 20px;
             color: #F1FAEE;
@@ -189,7 +186,6 @@
             position: relative;
         }
 
-        /* 方向按钮 */
         .controls {
             display: grid;
             grid-template-columns: 60px 60px 60px;
@@ -224,7 +220,6 @@
         .down { grid-column: 2; grid-row: 2; }
         .right { grid-column: 3; grid-row: 2; }
 
-        /* 功能按钮 */
         .func-btn {
             padding: 10px 25px;
             border: none;
@@ -242,7 +237,6 @@
             background: #E63946;
         }
 
-        /* 祝福弹窗 */
         #blessingModal {
             position: fixed;
             top: 0;
@@ -309,33 +303,31 @@
     </style>
 </head>
 <body>
-    <!-- 轻量级加载动画 -->
-    <div id="loadingScreen">
-        <div class="loader-wrapper">
-            <div class="loader-item loader-tree1">🎄</div>
-            <div class="loader-item loader-gift">🎁</div>
-            <div class="loader-item loader-tree2">🎄</div>
+    <!-- 加载画面（核心：点击任意位置立即关闭） -->
+    <div id="loader">
+        <div class="loader-content">
+            <div class="trees">
+                <div class="tree">🎄</div>
+                <div class="gift">🎁</div>
+                <div class="tree">🎄</div>
+            </div>
+            <div class="load-text">圣诞祝福加载中...</div>
+            <div class="click-hint">点击屏幕任意位置立即进入</div>
         </div>
-        <div class="loading-text">圣诞祝福加载中...</div>
     </div>
 
     <!-- 雪花容器 -->
-    <div id="snowContainer"></div>
+    <div id="snow"></div>
 
-    <!-- 游戏标题 -->
     <h1>🎄 圣诞贪吃蛇 🎄</h1>
 
-    <!-- 游戏主容器 -->
     <div class="game-box">
         <canvas id="gameCanvas" width="320" height="320"></canvas>
-        <!-- 撞墙提示语 -->
         <div id="gameTip">加油亲爱的！再接再厉，只需要吃5个就有彩蛋哦！</div>
     </div>
 
-    <!-- 分数显示 -->
     <div class="score-box">分数: <span id="scoreNum">0</span> (目标: 5个礼物)</div>
 
-    <!-- 方向控制按钮 -->
     <div class="controls">
         <button class="btn up">↑</button>
         <button class="btn left">←</button>
@@ -343,13 +335,11 @@
         <button class="btn right">→</button>
     </div>
 
-    <!-- 功能按钮 -->
     <div>
         <button class="func-btn" id="pauseBtn">暂停/继续</button>
         <button class="func-btn" id="restartBtn">重新开始</button>
     </div>
 
-    <!-- 圣诞祝福弹窗 -->
     <div id="blessingModal">
         <div class="blessing-card">
             <h2>🎄 恭喜吃到5个礼物！🎄</h2>
@@ -359,9 +349,33 @@
     </div>
 
     <script>
-        window.onload = function() {
-            // ========== 核心元素获取 ==========
-            const loadingScreen = document.getElementById('loadingScreen');
+        // 第一步：立即绑定点击事件，优先于所有逻辑
+        document.addEventListener('click', function() {
+            const loader = document.getElementById('loader');
+            if (loader && loader.style.display !== 'none') {
+                loader.style.display = 'none'; // 直接隐藏加载画面
+                initGameCore(); // 初始化游戏核心
+            }
+        }, { once: true }); // 只执行一次，避免重复触发
+
+        // 第二步：2秒自动兜底，防止点击没反应
+        setTimeout(function() {
+            const loader = document.getElementById('loader');
+            if (loader) {
+                loader.style.display = 'none';
+                // 防止重复初始化
+                if (typeof gameInitialized === 'undefined') {
+                    initGameCore();
+                }
+            }
+        }, 2000);
+
+        // 游戏核心初始化函数
+        let gameInitialized = false;
+        function initGameCore() {
+            gameInitialized = true; // 标记已初始化
+
+            // ========== 元素获取 ==========
             const canvas = document.getElementById('gameCanvas');
             const ctx = canvas.getContext('2d');
             const gameTip = document.getElementById('gameTip');
@@ -370,7 +384,7 @@
             const restartBtn = document.getElementById('restartBtn');
             const blessingModal = document.getElementById('blessingModal');
             const closeModal = document.getElementById('closeModal');
-            const snowContainer = document.getElementById('snowContainer');
+            const snowContainer = document.getElementById('snow');
 
             // ========== 游戏配置 ==========
             const grid = 20;
@@ -385,44 +399,20 @@
             let isPaused = false;
             let giftCount = 0;
 
-            // ========== 加载动画控制 - 双重保险机制 ==========
-            // 1. 自动关闭（2.5秒，动画播放1-2次后）
-            const loadTimeout = setTimeout(() => {
-                hideLoading();
-            }, 2500);
-
-            // 2. 手动关闭（防止自动关闭失效）
-            loadingScreen.addEventListener('click', hideLoading);
-
-            // 隐藏加载动画的函数
-            function hideLoading() {
-                clearTimeout(loadTimeout); // 清除超时器，避免重复执行
-                loadingScreen.classList.add('hidden'); // 添加隐藏类
-                // 加载完成后初始化游戏和雪花
-                initSnow();
-                initGame();
-            }
-
-            // ========== 雪花初始化 ==========
-            function initSnow() {
-                // 先生成一批雪花
-                for(let i=0; i<20; i++) {
-                    createSnow();
-                }
-                // 定时补充雪花
-                setInterval(createSnow, 300);
-            }
+            // ========== 初始化雪花 ==========
+            for(let i=0; i<20; i++) createSnow();
+            setInterval(createSnow, 300);
 
             function createSnow() {
                 const snow = document.createElement('div');
                 snow.className = 'snowflake';
-                const snowChars = ['❄️', '❅', '❆', '✧', '✦'];
-                snow.textContent = snowChars[Math.floor(Math.random() * 5)];
-                snow.style.left = Math.random() * 100 + '%';
+                const chars = ['❄️', '❅', '❆', '✧', '✦'];
+                snow.textContent = chars[Math.floor(Math.random()*5)];
+                snow.style.left = Math.random()*100+'%';
                 snow.style.top = '-20px';
-                snow.style.fontSize = (Math.random() * 10 + 10) + 'px';
-                snow.style.animationDuration = (Math.random() * 20 + 10) + 's';
-                snow.style.opacity = Math.random() * 0.5 + 0.5;
+                snow.style.fontSize = (Math.random()*10+10)+'px';
+                snow.style.animationDuration = (Math.random()*20+10)+'s';
+                snow.style.opacity = Math.random()*0.5+0.5;
                 if (snow.textContent === '✧' || snow.textContent === '✦') {
                     snow.style.color = '#FFD700';
                 }
@@ -450,10 +440,10 @@
             // ========== 随机食物 ==========
             function getRandomFood() {
                 let newFood;
-                while (!newFood || snake.some(seg => seg.x === newFood.x && seg.y === newFood.y)) {
+                while (!newFood || snake.some(s => s.x === newFood.x && s.y === newFood.y)) {
                     newFood = {
-                        x: Math.floor(Math.random() * (tileCount - 2)) + 1,
-                        y: Math.floor(Math.random() * (tileCount - 2)) + 1
+                        x: Math.floor(Math.random()*(tileCount-2))+1,
+                        y: Math.floor(Math.random()*(tileCount-2))+1
                     };
                 }
                 return newFood;
@@ -475,14 +465,14 @@
                 snake.unshift(head);
 
                 // 撞墙/撞自己检测
-                if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+                if (head.x<0 || head.x>=tileCount || head.y<0 || head.y>=tileCount) {
                     gameTip.style.display = 'block';
                     clearInterval(gameLoop);
                     isPaused = true;
                     return;
                 }
 
-                for (let i=1; i<snake.length; i++) {
+                for(let i=1; i<snake.length; i++) {
                     if (head.x === snake[i].x && head.y === snake[i].y) {
                         gameTip.style.display = 'block';
                         clearInterval(gameLoop);
@@ -523,7 +513,7 @@
                 // 网格
                 ctx.strokeStyle = '#e0e0e0';
                 ctx.lineWidth = 1;
-                for (let i=0; i<=tileCount; i++) {
+                for(let i=0; i<=tileCount; i++) {
                     ctx.beginPath();
                     ctx.moveTo(i*grid,0);
                     ctx.lineTo(i*grid,canvas.height);
@@ -544,7 +534,7 @@
                 ctx.fillText('🎁', food.x*grid+grid/2, food.y*grid+grid/2);
 
                 // 蛇
-                snake.forEach((s, i) => {
+                snake.forEach((s,i) => {
                     ctx.fillStyle = i===0 ? '#2A9D8F' : '#81B29A';
                     ctx.fillRect(s.x*grid+2, s.y*grid+2, grid-4, grid-4);
                     if (i===0) {
@@ -575,12 +565,8 @@
             pauseBtn.onclick = () => {
                 if (giftCount === 5) return;
                 isPaused = !isPaused;
-                if (isPaused) {
-                    gameTip.style.display = 'block';
-                    gameTip.textContent = '游戏已暂停';
-                } else {
-                    gameTip.style.display = 'none';
-                }
+                gameTip.style.display = isPaused ? 'block' : 'none';
+                gameTip.textContent = isPaused ? '游戏已暂停' : '加油亲爱的！再接再厉，只需要吃5个就有彩蛋哦！';
             };
 
             // 重新开始
@@ -591,7 +577,10 @@
                 blessingModal.style.display = 'none';
                 initGame();
             };
-        };
+
+            // 首次启动游戏
+            initGame();
+        }
     </script>
 </body>
 </html>
