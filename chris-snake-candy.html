@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>圣诞祝福小游戏 | 给亲爱的她</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>圣诞贪吃蛇 | 给亲爱的她</title>
     <style>
         :root {
             --christmas-red: #E63946;
@@ -26,252 +24,122 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        body {
-            width: 100vw;
-            min-height: 100vh;
-            background: linear-gradient(135deg, var(--christmas-blue) 0%, #0B132B 100%);
-            color: var(--christmas-white);
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 20px 0;
-        }
-
-        /* 页面加载动画 */
-        .loader {
+        /* 全局雪花背景容器 */
+        .snow-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--christmas-blue);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        body {
+            width: 100vw;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 999;
-            transition: opacity 0.8s ease;
-        }
-
-        .loader h2 {
-            margin-top: 20px;
-            font-size: 20px;
-            color: var(--christmas-gold);
-        }
-
-        .snowflake-loader {
-            font-size: 40px;
-            animation: spin 2s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* 标题样式 */
-        .game-title {
-            text-align: center;
-            margin-bottom: 20px;
+            /* 圣诞渐变背景 */
+            background: linear-gradient(135deg, var(--christmas-blue) 0%, #0B132B 100%);
+            padding: 20px 0;
+            overflow-x: hidden;
             position: relative;
         }
 
-        .game-title h1 {
+        h1 {
             font-size: 28px;
             color: var(--christmas-gold);
+            margin-bottom: 15px;
             text-shadow: 0 0 10px var(--christmas-gold), 0 2px 4px rgba(0,0,0,0.3);
-            margin-bottom: 8px;
+            text-align: center;
         }
 
-        .game-title p {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-
-        /* 玩法选择面板 */
-        .mode-select {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .mode-btn {
-            width: 140px;
-            height: 100px;
-            border-radius: 12px;
-            border: 2px solid var(--christmas-gold);
-            background: rgba(255,255,255,0.1);
-            color: var(--christmas-white);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
-        }
-
-        .mode-btn:hover, .mode-btn.active {
-            background: var(--christmas-gold);
-            color: var(--christmas-blue);
-            transform: translateY(-5px);
-            box-shadow: 0 6px 15px rgba(255,215,0,0.4);
-        }
-
-        .mode-btn i {
-            font-size: 28px;
-        }
-
-        .mode-btn span {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        /* 游戏容器 */
         .game-container {
             position: relative;
             width: 90vw;
-            max-width: 375px; /* 固定最大宽度避免错位 */
-            height: 375px; /* 固定高度保证正方形 */
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
+            max-width: 400px;
+            height: 90vw;
+            max-height: 400px;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
             border: 3px solid var(--christmas-gold);
-            background: var(--christmas-white);
-            display: none;
+            background-color: var(--christmas-white);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
         }
 
-        /* 贪吃蛇游戏样式 */
-        #snake-game {
-            width: 100%;
-            height: 100%;
-            background: #F8F9FA;
-            display: block;
-        }
-
-        /* 消消乐游戏样式 */
-        #match-game {
-            width: 100%;
-            height: 100%;
-            background: #F8F9FA;
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            grid-template-rows: repeat(6, 1fr);
-            gap: 2px;
-            padding: 5px;
-        }
-
-        .match-item {
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px; /* 增大图标尺寸 */
-            background: rgba(42, 157, 143, 0.8);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .match-item:active {
-            transform: scale(0.95);
-        }
-
-        .match-item.selected {
-            background: var(--christmas-gold);
-            transform: scale(1.1);
-            box-shadow: 0 0 10px var(--christmas-gold);
-        }
-
-        .match-item.matching {
-            animation: matchBlink 0.5s ease-in-out 2;
-            background: var(--christmas-red);
-            color: white;
-        }
-
-        @keyframes matchBlink {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.1); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        /* 游戏信息面板 */
-        .game-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 90vw;
-            max-width: 375px;
-            margin: 15px 0;
-            padding: 10px 15px;
-            border-radius: 10px;
+        .score-panel {
+            margin: 10px 0;
+            font-size: 20px;
+            color: var(--christmas-white);
+            font-weight: 500;
+            padding: 8px 20px;
+            border-radius: 20px;
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(5px);
             border: 1px solid var(--christmas-gold);
         }
 
-        .score-box {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .score-box i {
-            color: var(--christmas-gold);
-        }
-
-        .score-box span {
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        /* 控制按钮 */
-        .control-panel {
-            display: flex;
-            gap: 10px;
-            margin: 15px 0;
-        }
-
-        .ctrl-btn {
-            padding: 10px 20px;
-            border-radius: 25px;
-            border: none;
-            background: var(--christmas-green);
-            color: white;
+        .control-tips {
             font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow);
+            color: var(--christmas-white);
+            text-align: center;
+            margin-bottom: 15px;
+            opacity: 0.8;
         }
 
-        .ctrl-btn:hover {
-            background: var(--christmas-red);
-            transform: translateY(-2px);
+        /* 游戏结束提示 */
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: var(--christmas-red);
+            font-weight: bold;
+            text-shadow: 0 0 5px var(--christmas-white);
+            display: none;
+            text-align: center;
+            line-height: 1.5;
+            z-index: 5;
         }
 
-        /* 祝福弹窗 */
-        .blessing-modal {
+        /* 圣诞彩蛋弹窗（升级版本） */
+        .christmas-egg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.85);
+            background: radial-gradient(ellipse at center, rgba(25, 29, 61, 0.98) 0%, rgba(0, 0, 0, 0.98) 100%);
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 100;
+            overflow: hidden;
+            border: none;
             padding: 20px;
         }
 
+        /* 星光背景 */
+        .star-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* 祝福卡片 */
         .blessing-card {
             width: 90%;
             max-width: 350px;
@@ -282,6 +150,8 @@
             position: relative;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             animation: cardFloat 3s ease-in-out infinite alternate;
+            z-index: 2;
+            border: 2px solid var(--christmas-gold);
         }
 
         @keyframes cardFloat {
@@ -317,576 +187,470 @@
             to { transform: rotate(5deg); }
         }
 
-        .blessing-card h2 {
-            color: var(--christmas-gold);
-            font-size: 24px;
-            margin-bottom: 15px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        .christmas-text {
+            color: var(--christmas-white);
+            text-align: center;
+            font-size: 20px;
+            line-height: 2;
+            z-index: 2;
+            position: relative;
         }
 
-        .blessing-card p {
-            color: var(--christmas-white);
+        .christmas-text h2 {
+            color: var(--christmas-gold);
+            font-size: 26px;
+            margin-bottom: 15px;
+            animation: textGlow 2s ease-in-out infinite alternate;
+        }
+
+        .christmas-text p {
+            background: linear-gradient(90deg, #fff, var(--christmas-gold), #fff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: textGradient 3s linear infinite;
             font-size: 18px;
             line-height: 1.8;
-            margin-bottom: 20px;
         }
 
-        .blessing-card .signature {
-            font-style: italic;
-            font-size: 16px;
-            margin-top: 10px;
-            color: var(--christmas-gold);
+        /* 圣诞装饰 */
+        .christmas-deco {
+            position: absolute;
+            z-index: 2;
         }
 
-        .close-modal {
+        .christmas-tree {
+            top: 20px;
+            right: 20px;
+            font-size: 50px;
+            animation: treeSway 3s ease-in-out infinite alternate;
+        }
+
+        .santa {
+            top: 20px;
+            left: 20px;
+            font-size: 50px;
+            animation: santaFly 10s linear infinite;
+        }
+
+        /* 全局雪花样式 */
+        .global-snowflake {
+            position: absolute;
+            z-index: 1;
+            animation: globalSnowfall linear infinite;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+        }
+
+        /* 弹窗雪花样式 */
+        .modal-snowflake {
+            position: absolute;
+            z-index: 1;
+            animation: modalSnowfall linear infinite;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+        }
+
+        .snow1 { content: '❄️'; }
+        .snow2 { content: '❅'; }
+        .snow3 { content: '❆'; }
+        .snow4 { content: '✧'; color: var(--christmas-gold); }
+        .snow5 { content: '✦'; color: var(--christmas-green); }
+
+        @keyframes globalSnowfall {
+            0% {
+                transform: translateY(-10px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes modalSnowfall {
+            0% {
+                transform: translateY(-10px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100%) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes textGlow {
+            from { text-shadow: 0 0 5px var(--christmas-gold), 0 0 10px var(--christmas-gold); }
+            to { text-shadow: 0 0 10px var(--christmas-gold), 0 0 20px var(--christmas-gold), 0 0 30px var(--christmas-gold); }
+        }
+
+        @keyframes textGradient {
+            to { background-position: 200% center; }
+        }
+
+        @keyframes starTwinkle {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+
+        .restart-btn {
             padding: 10px 25px;
-            border-radius: 25px;
-            border: none;
-            background: var(--christmas-gold);
-            color: var(--christmas-blue);
             font-size: 16px;
-            font-weight: 600;
+            background: var(--christmas-green);
+            color: var(--christmas-white);
+            border: none;
+            border-radius: 25px;
             cursor: pointer;
-            margin-top: 15px;
-            transition: all 0.3s ease;
+            margin-bottom: 10px;
+            touch-action: manipulation;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
         }
 
-        .close-modal:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(255,215,0,0.4);
+        .restart-btn:hover {
+            background: var(--christmas-red);
+            transform: translateY(-2px);
         }
 
-        /* 雪花背景 */
-        .snow-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        /* 贪吃蛇方向按钮 */
-        .snake-controls {
+        .pause-tip {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: var(--christmas-blue);
             display: none;
+            z-index: 5;
+        }
+
+        /* 方向按钮样式（圣诞配色） */
+        .control-buttons {
+            display: grid;
+            grid-template-areas:
+                ". up ."
+                "left down right";
+            gap: 10px;
             margin-bottom: 20px;
-            position: relative;
-            width: 200px;
-            height: 200px;
         }
 
         .dir-btn {
-            position: absolute;
             width: 60px;
             height: 60px;
             border-radius: 50%;
             border: none;
             background: var(--christmas-green);
-            color: white;
-            font-size: 22px;
+            color: var(--christmas-white);
+            font-size: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-            transition: all 0.2s ease;
+            touch-action: manipulation;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.2s;
         }
 
         .dir-btn:active {
             background: var(--christmas-red);
             transform: scale(0.95);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
 
-        .dir-btn.up { top: 0; left: 70px; }
-        .dir-btn.down { bottom: 0; left: 70px; }
-        .dir-btn.left { left: 0; top: 70px; }
-        .dir-btn.right { right: 0; top: 70px; }
+        .up { grid-area: up; }
+        .down { grid-area: down; }
+        .left { grid-area: left; }
+        .right { grid-area: right; }
 
-        /* 适配微信浏览器的滚动条 */
-        body::-webkit-scrollbar {
-            width: 0;
+        /* 暂停按钮 */
+        .pause-btn {
+            padding: 8px 20px;
+            font-size: 14px;
+            background: var(--christmas-blue);
+            color: var(--christmas-white);
+            border: none;
+            border-radius: 20px;
+            touch-action: manipulation;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            transition: all 0.2s;
         }
 
-        /* 响应式调整 */
-        @media (max-width: 375px) {
-            .mode-btn {
-                width: 120px;
-                height: 90px;
-            }
+        .pause-btn:active {
+            background: var(--christmas-gold);
+            color: var(--christmas-blue);
+            transform: scale(0.95);
+        }
 
-            .blessing-card p {
-                font-size: 16px;
-            }
+        /* 彩蛋关闭按钮（升级） */
+        .close-egg {
+            padding: 12px 30px;
+            font-size: 16px;
+            background: linear-gradient(90deg, var(--christmas-gold), #ff9a00);
+            color: var(--christmas-blue);
+            border: none;
+            border-radius: 25px;
+            touch-action: manipulation;
+            z-index: 2;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            animation: btnPulse 2s ease-in-out infinite alternate;
+            margin-top: 20px;
+            font-weight: 600;
+        }
 
-            .game-container {
-                height: 340px;
-            }
-
-            .snake-controls {
-                width: 180px;
-                height: 180px;
-            }
-
-            .dir-btn {
-                width: 55px;
-                height: 55px;
-                font-size: 20px;
-            }
-
-            .dir-btn.up { left: 62px; }
-            .dir-btn.down { left: 62px; }
-            .dir-btn.left { top: 62px; }
-            .dir-btn.right { top: 62px; }
+        @keyframes btnPulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
         }
     </style>
 </head>
 <body>
-    <!-- 加载动画 -->
-    <div class="loader" id="loader">
-        <div class="snowflake-loader">❄️</div>
-        <h2>圣诞祝福加载中...</h2>
+    <!-- 全局雪花背景容器 -->
+    <div class="snow-container" id="globalSnowContainer"></div>
+
+    <h1>🎄 圣诞贪吃蛇 🎄</h1>
+    <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div class="game-over" id="gameOver">小宝别灰心，成功吃到5个时有惊喜彩蛋哦！</div>
+        <div class="pause-tip" id="pauseTip">已暂停</div>
     </div>
-
-    <!-- 雪花背景容器 -->
-    <div class="snow-container" id="snowContainer"></div>
-
-    <!-- 标题 -->
-    <div class="game-title">
-        <h1>🎄 圣诞专属祝福 🎄</h1>
-        <p>玩游戏解锁暖心祝福，送给最爱的她</p>
-    </div>
-
-    <!-- 玩法选择 -->
-    <div class="mode-select">
-        <div class="mode-btn" id="snake-mode">
-            <i class="fas fa-snake"></i>
-            <span>圣诞贪吃蛇</span>
-        </div>
-        <div class="mode-btn" id="match-mode">
-            <i class="fas fa-gift"></i>
-            <span>圣诞消消乐</span>
-        </div>
-    </div>
-
-    <!-- 游戏信息面板 -->
-    <div class="game-info" id="gameInfo" style="display: none;">
-        <div class="score-box">
-            <i class="fas fa-star"></i>
-            <span>分数: <span id="gameScore">0</span></span>
-        </div>
-        <div class="score-box">
-            <i class="fas fa-gift"></i>
-            <span>进度: <span id="giftProgress">0</span>%</span>
-        </div>
-    </div>
-
-    <!-- 游戏容器 -->
-    <div class="game-container" id="gameContainer">
-        <!-- 贪吃蛇游戏画布 -->
-        <canvas id="snake-game"></canvas>
-        <!-- 消消乐游戏容器 -->
-        <div id="match-game"></div>
-    </div>
-
-    <!-- 控制按钮 -->
-    <div class="control-panel" id="controlPanel" style="display: none;">
-        <button class="ctrl-btn" id="restartBtn">重新开始</button>
-        <button class="ctrl-btn" id="pauseBtn">暂停游戏</button>
-    </div>
-
-    <!-- 贪吃蛇方向按钮 -->
-    <div class="snake-controls" id="snakeControls">
+    
+    <div class="score-panel">分数: <span id="score">0</span>（目标：5个食物）</div>
+    <div class="control-tips">点击方向按钮控制移动</div>
+    <button class="pause-btn" id="pauseBtn">暂停/继续</button>
+    
+    <!-- 方向控制按钮 -->
+    <div class="control-buttons">
         <button class="dir-btn up">↑</button>
         <button class="dir-btn left">←</button>
         <button class="dir-btn down">↓</button>
         <button class="dir-btn right">→</button>
     </div>
+    
+    <button class="restart-btn" id="restartBtn">重新开始</button>
 
-    <!-- 祝福弹窗 -->
-    <div class="blessing-modal" id="blessingModal">
+    <!-- 圣诞彩蛋弹窗（升级为祝福卡片） -->
+    <div class="christmas-egg" id="christmasEgg">
+        <!-- 星光背景 -->
+        <div class="star-bg" id="starBg"></div>
+        <!-- 圣诞装饰 -->
+        <div class="christmas-deco christmas-tree">🎄</div>
+        <div class="christmas-deco santa">🎅</div>
+        <!-- 祝福卡片 -->
         <div class="blessing-card">
-            <h2>❤️ 给亲爱的你 ❤️</h2>
-            <p>亲爱的老婆/女友：<br>
-            圣诞的雪花为你飘落，新年的钟声为你敲响。<br>
-            感谢你出现在我的生命里，让每一天都充满温暖与甜蜜。<br>
-            愿圣诞的快乐伴随你，愿我们的爱永远炽热如初！</p>
-            <p class="signature">爱你的我 敬上</p>
+            <div class="christmas-text">
+                <h2>🎄恭喜吃到5个食物！🎄</h2>
+                <p>祝亲爱的老婆和小年糕圣诞快乐！<br>万事如意！身体健康！<br>爱你的心永远炽热如初 ❤️</p>
+            </div>
         </div>
-        <button class="close-modal" id="closeModal">收下祝福</button>
+        <button class="close-egg" id="closeEgg">收下祝福</button>
     </div>
 
-    <!-- 音乐资源 -->
-    <audio id="bgMusic" loop preload="auto">
+    <!-- 圣诞背景音乐 -->
+    <audio id="christmasMusic" loop preload="auto">
         <source src="https://music.163.com/song/media/outer/url?id=186037.mp3" type="audio/mpeg">
     </audio>
     <audio id="successSound" preload="auto">
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3" type="audio/mpeg">
     </audio>
-    <audio id="matchSound" preload="auto">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="eatSound" preload="auto">
-        <source src="https://assets.mixkit.co/sfx/preview/mixkit-small-bell-ringer-Christmas-603.mp3" type="audio/mpeg">
-    </audio>
 
     <script>
-        // 全局变量
-        let currentMode = '';
-        let gameScore = 0;
-        let giftProgress = 0;
-        let isPaused = false;
-        let snowInterval;
-
-        // DOM元素
-        const loader = document.getElementById('loader');
-        const snowContainer = document.getElementById('snowContainer');
-        const snakeModeBtn = document.getElementById('snake-mode');
-        const matchModeBtn = document.getElementById('match-mode');
-        const gameContainer = document.getElementById('gameContainer');
-        const gameInfo = document.getElementById('gameInfo');
-        const controlPanel = document.getElementById('controlPanel');
-        const snakeControls = document.getElementById('snakeControls');
-        const gameScoreEl = document.getElementById('gameScore');
-        const giftProgressEl = document.getElementById('giftProgress');
-        const blessingModal = document.getElementById('blessingModal');
-        const closeModal = document.getElementById('closeModal');
+        // 获取元素
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const gameOverEl = document.getElementById('gameOver');
+        const pauseTip = document.getElementById('pauseTip');
+        const scoreEl = document.getElementById('score');
         const restartBtn = document.getElementById('restartBtn');
         const pauseBtn = document.getElementById('pauseBtn');
-        const bgMusic = document.getElementById('bgMusic');
+        const dirButtons = document.querySelectorAll('.dir-btn');
+        const christmasEgg = document.getElementById('christmasEgg');
+        const closeEgg = document.getElementById('closeEgg');
+        const christmasMusic = document.getElementById('christmasMusic');
         const successSound = document.getElementById('successSound');
-        const matchSound = document.getElementById('matchSound');
-        const eatSound = document.getElementById('eatSound');
+        const gameContainer = document.querySelector('.game-container');
+        const starBg = document.getElementById('starBg');
+        const globalSnowContainer = document.getElementById('globalSnowContainer');
 
-        // 贪吃蛇游戏变量（修复核心）
-        const snakeGame = document.getElementById('snake-game');
-        const snakeCtx = snakeGame.getContext('2d');
+        // 适配手机屏幕的画布尺寸
+        let gridSize = 20;
+        let tileCount;
+        let canvasSize;
+
+        // 游戏状态
         let snake = [];
         let food = {};
         let direction = 'right';
         let nextDirection = 'right';
-        let snakeGameLoop;
-        let gridSize = 25; // 调整格子大小适配固定容器
-        let tileCount;
+        let score = 0;
+        let gameSpeed = 200;
+        let gameLoop;
+        let isPaused = false;
+        let isEggShown = false;
+        let foodEatenCount = 0;
+        const targetFoodCount = 5;
 
-        // 消消乐游戏变量
-        const matchGame = document.getElementById('match-game');
-        const matchItems = ['🎄', '🎁', '❄️', '🎅', '🌟', '🍪'];
-        let gameGrid = [];
-        let selectedItem = null;
-        let isMatching = false; // 防止消除过程中重复操作
+        // 雪花定时器
+        let globalSnowInterval;
+        let modalSnowInterval;
 
-        // 页面加载完成后初始化
+        // 页面加载时创建全局雪花
         window.addEventListener('load', () => {
-            // 固定画布尺寸（修复错位关键）
-            snakeGame.width = gameContainer.offsetWidth;
-            snakeGame.height = gameContainer.offsetHeight;
-            tileCount = Math.floor(snakeGame.width / gridSize);
-            if (tileCount * gridSize > snakeGame.width) {
-                gridSize = Math.floor(snakeGame.width / 15); // 强制15列保证适配
-                tileCount = 15;
-            }
-
-            // 模拟加载过程
-            setTimeout(() => {
-                loader.style.opacity = '0';
-                setTimeout(() => {
-                    loader.style.display = 'none';
-                    document.body.addEventListener('click', playBgMusic, { once: true });
-                }, 800);
-            }, 1500);
-
-            // 创建雪花背景
-            createSnowflakes();
-
-            // 绑定玩法选择事件
-            snakeModeBtn.addEventListener('click', () => switchMode('snake'));
-            matchModeBtn.addEventListener('click', () => switchMode('match'));
-
-            // 绑定控制按钮事件
-            restartBtn.addEventListener('click', restartGame);
-            pauseBtn.addEventListener('click', togglePause);
-            closeModal.addEventListener('click', () => {
-                blessingModal.style.display = 'none';
-                bgMusic.play();
-            });
-
-            // 绑定贪吃蛇方向按钮事件
-            document.querySelectorAll('.dir-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (currentMode === 'snake' && !isPaused) {
-                        nextDirection = btn.classList[1];
-                    }
-                });
-            });
+            initGame();
+            createGlobalSnowflakes();
+            // 微信浏览器音频适配
+            document.body.addEventListener('click', () => {
+                christmasMusic.play().catch(err => console.log('微信需要用户交互播放音乐'));
+            }, { once: true });
         });
 
-        // 播放背景音乐（适配微信浏览器）
-        function playBgMusic() {
-            bgMusic.play().catch(err => {
-                console.log('微信浏览器需要用户交互才能播放音乐');
-            });
+        // 初始化画布尺寸
+        function initCanvasSize() {
+            canvasSize = gameContainer.clientWidth;
+            canvas.width = canvasSize;
+            canvas.height = canvasSize;
+            tileCount = Math.floor(canvasSize / gridSize);
+            gridSize = canvasSize / tileCount;
         }
 
-        // 创建雪花背景动画
-        function createSnowflakes() {
-            snowInterval = setInterval(() => {
-                const snowflake = document.createElement('div');
-                snowflake.textContent = ['❄️', '❅', '❆'][Math.floor(Math.random() * 3)];
-                snowflake.style.position = 'absolute';
-                snowflake.style.left = `${Math.random() * 100}vw`;
-                snowflake.style.top = '-20px';
-                snowflake.style.fontSize = `${Math.random() * 15 + 10}px`;
-                snowflake.style.opacity = Math.random() * 0.8 + 0.2;
-                snowflake.style.animation = `snowfall ${Math.random() * 10 + 5}s linear infinite`;
-                snowContainer.appendChild(snowflake);
-
-                setTimeout(() => {
-                    snowflake.remove();
-                }, 15000);
-            }, 300);
-
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes snowfall {
-                    0% { transform: translateY(0) rotate(0deg); }
-                    100% { transform: translateY(100vh) rotate(720deg); }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        // 切换游戏模式
-        function switchMode(mode) {
-            resetGame();
-            currentMode = mode;
-
-            snakeModeBtn.classList.remove('active');
-            matchModeBtn.classList.remove('active');
-            mode === 'snake' ? snakeModeBtn.classList.add('active') : matchModeBtn.classList.add('active');
-
-            gameContainer.style.display = 'block';
-            gameInfo.style.display = 'flex';
-            controlPanel.style.display = 'flex';
-
-            if (mode === 'snake') {
-                snakeControls.style.display = 'block';
-                matchGame.style.display = 'none';
-                snakeGame.style.display = 'block';
-                initSnakeGame();
-            } else {
-                snakeControls.style.display = 'none';
-                snakeGame.style.display = 'none';
-                matchGame.style.display = 'grid';
-                initMatchGame();
-            }
-        }
-
-        // 重置游戏状态
-        function resetGame() {
-            clearInterval(snakeGameLoop);
-            gameScore = 0;
-            giftProgress = 0;
-            updateGameInfo();
-            isPaused = false;
-            pauseBtn.textContent = '暂停游戏';
-            isMatching = false;
-            selectedItem = null;
-        }
-
-        // 重新开始游戏
-        function restartGame() {
-            if (currentMode === 'snake') {
-                initSnakeGame();
-            } else {
-                initMatchGame();
-            }
-            isPaused = false;
-            pauseBtn.textContent = '暂停游戏';
-        }
-
-        // 暂停/继续游戏
-        function togglePause() {
-            if (isPaused) {
-                isPaused = false;
-                pauseBtn.textContent = '暂停游戏';
-                if (currentMode === 'snake') {
-                    snakeGameLoop = setInterval(updateSnakeGame, 200);
-                }
-            } else {
-                isPaused = true;
-                pauseBtn.textContent = '继续游戏';
-                clearInterval(snakeGameLoop);
-            }
-        }
-
-        // 更新游戏信息
-        function updateGameInfo() {
-            gameScoreEl.textContent = gameScore;
-            giftProgressEl.textContent = giftProgress;
-
-            if (giftProgress >= 100) {
-                setTimeout(() => {
-                    blessingModal.style.display = 'flex';
-                    successSound.play();
-                    bgMusic.pause();
-                }, 500);
-                giftProgress = 0;
-            }
-        }
-
-        // ---------------------- 贪吃蛇游戏逻辑（完全修复） ----------------------
-        function initSnakeGame() {
-            // 初始化蛇（基于固定格子大小）
+        // 初始化游戏
+        function initGame() {
+            initCanvasSize();
             snake = [
-                { x: 5, y: 8 },   // 固定初始位置避免越界
-                { x: 4, y: 8 },
-                { x: 3, y: 8 }
+                { x: tileCount / 2, y: tileCount / 2 },
+                { x: tileCount / 2 - 1, y: tileCount / 2 },
+                { x: tileCount / 2 - 2, y: tileCount / 2 }
             ];
             direction = 'right';
             nextDirection = 'right';
-
+            score = 0;
+            foodEatenCount = 0;
+            isEggShown = false;
+            scoreEl.textContent = score;
+            gameOverEl.style.display = 'none';
+            pauseTip.style.display = 'none';
+            christmasEgg.style.display = 'none';
             generateFood();
-
-            clearInterval(snakeGameLoop);
-            snakeGameLoop = setInterval(updateSnakeGame, 200);
-            drawSnakeGame();
+            if (gameLoop) clearInterval(gameLoop);
+            gameLoop = setInterval(gameUpdate, gameSpeed);
+            isPaused = false;
+            // 清除弹窗雪花和星光
+            clearModalSnowflakes();
+            clearStars();
         }
 
+        // 生成食物
         function generateFood() {
             food = {
-                x: Math.floor(Math.random() * (tileCount - 2)) + 1, // 避免边缘
-                y: Math.floor(Math.random() * (tileCount - 2)) + 1
+                x: Math.floor(Math.random() * tileCount),
+                y: Math.floor(Math.random() * tileCount)
             };
-            // 确保食物不在蛇身上
-            const isOnSnake = snake.some(segment => segment.x === food.x && segment.y === food.y);
-            if (isOnSnake) generateFood();
+            snake.forEach(segment => {
+                if (segment.x === food.x && segment.y === food.y) {
+                    generateFood();
+                }
+            });
         }
 
-        function updateSnakeGame() {
+        // 游戏更新
+        function gameUpdate() {
             if (isPaused) return;
-
             direction = getValidDirection(nextDirection);
             const head = { ...snake[0] };
 
-            // 移动蛇头（基于格子坐标）
             switch (direction) {
                 case 'up': head.y--; break;
                 case 'down': head.y++; break;
                 case 'left': head.x--; break;
                 case 'right': head.x++; break;
             }
+
             snake.unshift(head);
 
-            // 边界检测（修复撞墙逻辑）
+            // 碰撞检测
             if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
-                eatSound.pause();
-                initSnakeGame();
+                gameOver();
                 return;
             }
-
-            // 自撞检测
             for (let i = 1; i < snake.length; i++) {
                 if (head.x === snake[i].x && head.y === snake[i].y) {
-                    eatSound.pause();
-                    initSnakeGame();
+                    gameOver();
                     return;
                 }
             }
 
-            // 吃食物检测（修复坐标匹配）
+            // 吃食物
             if (head.x === food.x && head.y === food.y) {
-                eatSound.play();
-                gameScore += 10;
-                giftProgress = Math.min(100, giftProgress + 10);
-                updateGameInfo();
+                score += 10;
+                foodEatenCount++;
+                scoreEl.textContent = score;
                 generateFood();
+                if (score % 25 === 0) {
+                    gameSpeed = Math.max(80, gameSpeed - 20);
+                    clearInterval(gameLoop);
+                    gameLoop = setInterval(gameUpdate, gameSpeed);
+                }
+                if (foodEatenCount === targetFoodCount && !isEggShown) {
+                    showChristmasEgg();
+                }
             } else {
                 snake.pop();
             }
 
-            drawSnakeGame();
+            drawGame();
         }
 
-        function drawSnakeGame() {
-            // 清空画布（基于实际尺寸）
-            snakeCtx.clearRect(0, 0, snakeGame.width, snakeGame.height);
-            snakeCtx.fillStyle = '#F8F9FA';
-            snakeCtx.fillRect(0, 0, snakeGame.width, snakeGame.height);
+        // 绘制游戏
+        function drawGame() {
+            ctx.fillStyle = var(--christmas-white);
+            ctx.fillRect(0, 0, canvasSize, canvasSize);
 
-            // 绘制网格（精准匹配格子）
-            snakeCtx.strokeStyle = '#E9ECEF';
-            snakeCtx.lineWidth = 1;
-            for (let i = 0; i <= tileCount; i++) {
-                // 竖线
-                snakeCtx.beginPath();
-                snakeCtx.moveTo(i * gridSize, 0);
-                snakeCtx.lineTo(i * gridSize, snakeGame.height);
-                snakeCtx.stroke();
-                // 横线
-                snakeCtx.beginPath();
-                snakeCtx.moveTo(0, i * gridSize);
-                snakeCtx.lineTo(snakeGame.width, i * gridSize);
-                snakeCtx.stroke();
+            // 绘制网格
+            ctx.strokeStyle = '#eee';
+            for (let i = 0; i < tileCount; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * gridSize, 0);
+                ctx.lineTo(i * gridSize, canvasSize);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(0, i * gridSize);
+                ctx.lineTo(canvasSize, i * gridSize);
+                ctx.stroke();
             }
 
-            // 绘制食物（精准坐标）
-            snakeCtx.fillStyle = var(--christmas-red);
-            snakeCtx.beginPath();
-            snakeCtx.rect(
-                food.x * gridSize + 2,    // 加2像素内边距
-                food.y * gridSize + 2,
-                gridSize - 4,             // 减4像素保证在格子内
-                gridSize - 4
-            );
-            snakeCtx.fill();
-            snakeCtx.fillStyle = '#FFD700';
-            snakeCtx.font = `${gridSize - 8}px Arial`;
-            snakeCtx.textAlign = 'center';
-            snakeCtx.textBaseline = 'middle';
-            snakeCtx.fillText('🎁', food.x * gridSize + gridSize/2, food.y * gridSize + gridSize/2);
+            // 绘制食物（圣诞礼物）
+            ctx.fillStyle = var(--christmas-red);
+            ctx.beginPath();
+            ctx.arc(food.x * gridSize + gridSize/2, food.y * gridSize + gridSize/2, gridSize/2 - 2, 0, Math.PI*2);
+            ctx.fill();
+            ctx.strokeStyle = var(--christmas-green);
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.lineWidth = 1;
+            // 礼物图标
+            ctx.fillStyle = var(--christmas-gold);
+            ctx.font = `${gridSize - 8}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🎁', food.x * gridSize + gridSize/2, food.y * gridSize + gridSize/2);
 
-            // 绘制蛇（精准坐标）
+            // 绘制蛇（圣诞配色）
             snake.forEach((segment, index) => {
-                // 蛇头
+                ctx.fillStyle = index === 0 ? var(--christmas-green) : '#81B29A';
+                ctx.beginPath();
+                ctx.roundRect(segment.x * gridSize + 1, segment.y * gridSize + 1, gridSize - 2, gridSize - 2, 4);
+                ctx.fill();
+                // 蛇头圣诞装饰
                 if (index === 0) {
-                    snakeCtx.fillStyle = '#2A9D8F';
-                    snakeCtx.beginPath();
-                    snakeCtx.roundRect(
-                        segment.x * gridSize + 2,
-                        segment.y * gridSize + 2,
-                        gridSize - 4,
-                        gridSize - 4,
-                        8
-                    );
-                    snakeCtx.fill();
-                    // 蛇眼
-                    snakeCtx.fillStyle = 'white';
-                    snakeCtx.beginPath();
-                    snakeCtx.arc(
-                        segment.x * gridSize + gridSize/2 + 5,
-                        segment.y * gridSize + gridSize/2 - 5,
-                        3,
-                        0,
-                        Math.PI * 2
-                    );
-                    snakeCtx.fill();
-                } else {
-                    // 蛇身
-                    snakeCtx.fillStyle = '#81B29A';
-                    snakeCtx.beginPath();
-                    snakeCtx.roundRect(
-                        segment.x * gridSize + 2,
-                        segment.y * gridSize + 2,
-                        gridSize - 4,
-                        gridSize - 4,
-                        4
-                    );
-                    snakeCtx.fill();
+                    ctx.fillStyle = var(--christmas-gold);
+                    ctx.beginPath();
+                    ctx.moveTo(segment.x * gridSize + gridSize/2, segment.y * gridSize + 5);
+                    ctx.lineTo(segment.x * gridSize + gridSize/2 - 3, segment.y * gridSize + 10);
+                    ctx.lineTo(segment.x * gridSize + gridSize/2 + 3, segment.y * gridSize + 10);
+                    ctx.fill();
                 }
             });
         }
 
+        // 验证方向
         function getValidDirection(newDir) {
             if (direction === 'up' && newDir === 'down') return direction;
             if (direction === 'down' && newDir === 'up') return direction;
@@ -895,196 +659,136 @@
             return newDir;
         }
 
-        // ---------------------- 消消乐游戏逻辑（添加动态效果） ----------------------
-        function initMatchGame() {
-            gameGrid = [];
-            matchGame.innerHTML = '';
-            isMatching = false;
-
-            // 生成6x6网格
-            for (let row = 0; row < 6; row++) {
-                gameGrid[row] = [];
-                for (let col = 0; col < 6; col++) {
-                    const randomItem = matchItems[Math.floor(Math.random() * matchItems.length)];
-                    gameGrid[row][col] = randomItem;
-
-                    const item = document.createElement('div');
-                    item.className = 'match-item';
-                    item.dataset.row = row;
-                    item.dataset.col = col;
-                    item.textContent = randomItem;
-                    item.addEventListener('click', selectMatchItem);
-                    matchGame.appendChild(item);
-                }
-            }
-
-            // 检查初始是否有可消除项，有则重新生成
-            if (checkMatches().length > 0) {
-                initMatchGame();
-            }
+        // 游戏结束
+        function gameOver() {
+            clearInterval(gameLoop);
+            gameOverEl.style.display = 'block';
+            christmasMusic.pause();
         }
 
-        function selectMatchItem(e) {
-            if (isPaused || isMatching) return;
-
-            const item = e.target;
-            const row = parseInt(item.dataset.row);
-            const col = parseInt(item.dataset.col);
-
-            // 取消选中同一个项
-            if (selectedItem && selectedItem.row === row && selectedItem.col === col) {
-                selectedItem.element.classList.remove('selected');
-                selectedItem = null;
-                return;
-            }
-
-            // 选中第一个项
-            if (!selectedItem) {
-                selectedItem = { row, col, element: item };
-                item.classList.add('selected');
-                return;
-            }
-
-            // 检查是否相邻
-            const isAdjacent = (Math.abs(selectedItem.row - row) === 1 && selectedItem.col === col) || 
-                               (Math.abs(selectedItem.col - col) === 1 && selectedItem.row === row);
-
-            if (isAdjacent) {
-                // 交换元素
-                [gameGrid[selectedItem.row][selectedItem.col], gameGrid[row][col]] = 
-                [gameGrid[row][col], gameGrid[selectedItem.row][selectedItem.col]];
-                
-                // 更新显示
-                selectedItem.element.textContent = gameGrid[selectedItem.row][selectedItem.col];
-                item.textContent = gameGrid[row][col];
-
-                // 检查匹配
-                const matches = checkMatches();
-                if (matches.length > 0) {
-                    isMatching = true;
-                    // 添加消除动画
-                    matches.forEach(match => {
-                        const matchEl = document.querySelector(`.match-item[data-row="${match.row}"][data-col="${match.col}"]`);
-                        matchEl.classList.add('matching');
-                    });
-
-                    // 播放消除音效
-                    matchSound.play();
-
-                    // 延迟移除匹配项
-                    setTimeout(() => {
-                        removeMatches(matches);
-                        gameScore += matches.length * 5;
-                        giftProgress = Math.min(100, giftProgress + matches.length * 3);
-                        updateGameInfo();
-                        
-                        // 移除动画类
-                        document.querySelectorAll('.matching').forEach(el => {
-                            el.classList.remove('matching');
-                        });
-                        
-                        selectedItem.element.classList.remove('selected');
-                        selectedItem = null;
-                        isMatching = false;
-
-                        // 检查是否有新的可消除项，自动消除
-                        setTimeout(() => {
-                            autoMatch();
-                        }, 300);
-                    }, 500);
-                } else {
-                    // 无匹配则交换回来
-                    [gameGrid[selectedItem.row][selectedItem.col], gameGrid[row][col]] = 
-                    [gameGrid[row][col], gameGrid[selectedItem.row][selectedItem.col]];
-                    
-                    selectedItem.element.textContent = gameGrid[selectedItem.row][selectedItem.col];
-                    item.textContent = gameGrid[row][col];
-                    
-                    selectedItem.element.classList.remove('selected');
-                    selectedItem = null;
-                }
-            } else {
-                // 选中非相邻项，切换选中
-                selectedItem.element.classList.remove('selected');
-                selectedItem = { row, col, element: item };
-                item.classList.add('selected');
-            }
-        }
-
-        // 自动检测并消除匹配项（连锁反应）
-        function autoMatch() {
-            if (isMatching) return;
-
-            const matches = checkMatches();
-            if (matches.length > 0) {
-                isMatching = true;
-                matches.forEach(match => {
-                    const matchEl = document.querySelector(`.match-item[data-row="${match.row}"][data-col="${match.col}"]`);
-                    matchEl.classList.add('matching');
-                });
-
-                matchSound.play();
-
-                setTimeout(() => {
-                    removeMatches(matches);
-                    gameScore += matches.length * 5;
-                    giftProgress = Math.min(100, giftProgress + matches.length * 3);
-                    updateGameInfo();
-                    
-                    document.querySelectorAll('.matching').forEach(el => {
-                        el.classList.remove('matching');
-                    });
-                    
-                    isMatching = false;
-                    autoMatch(); // 递归检查新的匹配
-                }, 500);
-            }
-        }
-
-        function checkMatches() {
-            const matches = [];
-            // 检查行匹配（至少3个）
-            for (let row = 0; row < 6; row++) {
-                for (let col = 0; col < 4; col++) {
-                    const item = gameGrid[row][col];
-                    if (item && item === gameGrid[row][col+1] && item === gameGrid[row][col+2]) {
-                        matches.push({ row, col }, { row, col: col+1 }, { row, col: col+2 });
-                        // 检查4连
-                        if (item === gameGrid[row][col+3]) {
-                            matches.push({ row, col: col+3 });
-                        }
-                    }
-                }
-            }
-            // 检查列匹配（至少3个）
-            for (let col = 0; col < 6; col++) {
-                for (let row = 0; row < 4; row++) {
-                    const item = gameGrid[row][col];
-                    if (item && item === gameGrid[row+1][col] && item === gameGrid[row+2][col]) {
-                        matches.push({ row, col }, { row: row+1, col }, { row: row+2, col });
-                        // 检查4连
-                        if (item === gameGrid[row+3][col]) {
-                            matches.push({ row: row+3, col });
-                        }
-                    }
-                }
-            }
-            return matches;
-        }
-
-        function removeMatches(matches) {
-            // 移除匹配项并填充新元素
-            matches.forEach(match => {
-                gameGrid[match.row][match.col] = matchItems[Math.floor(Math.random() * matchItems.length)];
-                const matchEl = document.querySelector(`.match-item[data-row="${match.row}"][data-col="${match.col}"]`);
-                matchEl.textContent = gameGrid[match.row][match.col];
+        // 显示圣诞彩蛋
+        function showChristmasEgg() {
+            isEggShown = true;
+            isPaused = true;
+            christmasEgg.style.display = 'flex';
+            // 播放音效
+            successSound.play();
+            christmasMusic.play().catch(err => {
+                christmasEgg.addEventListener('click', () => {
+                    christmasMusic.play();
+                }, { once: true });
             });
+            // 创建星光背景
+            createStars();
+            // 持续创建弹窗雪花
+            createModalSnowflakes();
+            modalSnowInterval = setInterval(createModalSnowflakes, 100);
         }
 
-        // 自定义CSS变量获取函数
+        // ---------------------- 视觉效果核心功能 ----------------------
+        // 创建全局雪花背景
+        function createGlobalSnowflakes() {
+            globalSnowInterval = setInterval(() => {
+                const snowTypes = ['snow1', 'snow2', 'snow3', 'snow4', 'snow5'];
+                const snowflake = document.createElement('div');
+                const snowType = snowTypes[Math.floor(Math.random() * snowTypes.length)];
+                snowflake.classList.add('global-snowflake', snowType);
+                // 随机位置和样式
+                snowflake.style.left = `${Math.random() * 100}vw`;
+                snowflake.style.top = '-20px';
+                snowflake.style.fontSize = `${Math.random() * 15 + 10}px`;
+                snowflake.style.animationDuration = `${Math.random() * 20 + 10}s`;
+                snowflake.style.animationDelay = `${Math.random() * 5}s`;
+                snowflake.style.opacity = Math.random() * 0.8 + 0.2;
+                globalSnowContainer.appendChild(snowflake);
+                // 雪花消失后移除
+                setTimeout(() => {
+                    snowflake.remove();
+                }, 25000);
+            }, 500);
+        }
+
+        // 创建弹窗雪花
+        function createModalSnowflakes() {
+            const snowTypes = ['snow1', 'snow2', 'snow3', 'snow4', 'snow5'];
+            const snowCount = 20;
+            const container = christmasEgg;
+
+            for (let i = 0; i < snowCount; i++) {
+                const snowflake = document.createElement('div');
+                const snowType = snowTypes[Math.floor(Math.random() * snowTypes.length)];
+                snowflake.classList.add('modal-snowflake', snowType);
+                snowflake.style.left = `${Math.random() * 100}%`;
+                snowflake.style.top = '-10px';
+                snowflake.style.fontSize = `${Math.random() * 20 + 10}px`;
+                snowflake.style.animationDuration = `${Math.random() * 10 + 5}s`;
+                snowflake.style.animationDelay = `${Math.random() * 5}s`;
+                snowflake.style.opacity = Math.random() * 0.8 + 0.2;
+                container.appendChild(snowflake);
+                setTimeout(() => {
+                    snowflake.remove();
+                }, 15000);
+            }
+        }
+
+        // 星光背景创建
+        function createStars() {
+            const starCount = 80;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.style.position = 'absolute';
+                star.style.width = `${Math.random() * 4 + 1}px`;
+                star.style.height = star.style.width;
+                star.style.backgroundColor = Math.random() > 0.7 ? var(--christmas-gold) : '#fff';
+                star.style.borderRadius = '50%';
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.animation = `starTwinkle ${Math.random() * 3 + 2}s ease-in-out infinite`;
+                star.style.animationDelay = `${Math.random() * 3}s`;
+                starBg.appendChild(star);
+            }
+        }
+
+        // 清除星光
+        function clearStars() {
+            starBg.innerHTML = '';
+        }
+
+        // 清除弹窗雪花
+        function clearModalSnowflakes() {
+            clearInterval(modalSnowInterval);
+            document.querySelectorAll('.modal-snowflake').forEach(s => s.remove());
+        }
+
+        // CSS变量获取函数
         function var(name) {
             return getComputedStyle(document.documentElement).getPropertyValue(name);
         }
+
+        // ---------------------- 事件绑定 ----------------------
+        dirButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (isPaused && christmasEgg.style.display !== 'flex') return;
+                if (gameOverEl.style.display === 'block') return;
+                nextDirection = btn.classList[1];
+            });
+        });
+
+        pauseBtn.addEventListener('click', () => {
+            if (gameOverEl.style.display === 'block' || christmasEgg.style.display === 'flex') return;
+            isPaused = !isPaused;
+            pauseTip.style.display = isPaused ? 'block' : 'none';
+        });
+
+        restartBtn.addEventListener('click', initGame);
+
+        closeEgg.addEventListener('click', () => {
+            christmasEgg.style.display = 'none';
+            isPaused = false;
+            christmasMusic.play();
+        });
+
+        window.addEventListener('resize', initGame);
     </script>
 </body>
 </html>
