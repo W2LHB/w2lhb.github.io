@@ -31,6 +31,7 @@
             font-size: 24px;
             color: #333;
             margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .game-container {
@@ -48,12 +49,14 @@
             border: 2px solid #333;
             background-color: #fff;
             border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .score-panel {
             margin: 10px 0;
             font-size: 20px;
             color: #333;
+            font-weight: 500;
         }
 
         .control-tips {
@@ -85,36 +88,87 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            background: radial-gradient(ellipse at center, rgba(25, 29, 61, 0.95) 0%, rgba(0, 0, 0, 0.95) 100%);
             border-radius: 8px;
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 10;
+            overflow: hidden;
+            border: 3px solid #ffd700;
+        }
+
+        /* 星光背景 */
+        .star-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
         }
 
         .christmas-text {
             color: #fff;
             text-align: center;
-            font-size: 18px;
-            line-height: 1.8;
-            margin-bottom: 20px;
+            font-size: 20px;
+            line-height: 2;
+            margin-bottom: 25px;
             padding: 0 20px;
+            z-index: 2;
+            position: relative;
         }
 
         .christmas-text h2 {
             color: #ffd700;
-            font-size: 22px;
-            margin-bottom: 10px;
+            font-size: 26px;
+            margin-bottom: 15px;
+            animation: textGlow 2s ease-in-out infinite alternate;
         }
 
+        .christmas-text p {
+            background: linear-gradient(90deg, #fff, #ffd700, #fff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: textGradient 3s linear infinite;
+        }
+
+        /* 圣诞装饰 */
+        .christmas-deco {
+            position: absolute;
+            z-index: 2;
+        }
+
+        .christmas-tree {
+            top: 10px;
+            right: 10px;
+            font-size: 40px;
+            animation: treeSway 3s ease-in-out infinite alternate;
+        }
+
+        .santa {
+            top: 10px;
+            left: 10px;
+            font-size: 40px;
+            animation: santaFly 8s linear infinite;
+        }
+
+        /* 雪花样式 */
         .snowflake {
             position: absolute;
-            color: #fff;
-            font-size: 20px;
+            z-index: 1;
             animation: snowfall linear infinite;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
         }
+
+        .snow1 { content: '❄️'; }
+        .snow2 { content: '❅'; }
+        .snow3 { content: '❆'; }
+        .snow4 { content: '✧'; color: #ffd700; }
+        .snow5 { content: '✦'; color: #4299e1; }
 
         @keyframes snowfall {
             0% {
@@ -122,9 +176,34 @@
                 opacity: 1;
             }
             100% {
-                transform: translateY(100%) rotate(360deg);
+                transform: translateY(100%) rotate(720deg);
                 opacity: 0;
             }
+        }
+
+        @keyframes textGlow {
+            from { text-shadow: 0 0 5px #ffd700, 0 0 10px #ffd700; }
+            to { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700, 0 0 30px #ffd700; }
+        }
+
+        @keyframes textGradient {
+            to { background-position: 200% center; }
+        }
+
+        @keyframes treeSway {
+            from { transform: rotate(-5deg); }
+            to { transform: rotate(5deg); }
+        }
+
+        @keyframes santaFly {
+            0% { left: -50px; top: 10px; }
+            100% { left: 105%; top: 30px; }
+        }
+
+        @keyframes starTwinkle {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
         }
 
         .restart-btn {
@@ -137,10 +216,13 @@
             cursor: pointer;
             margin-bottom: 20px;
             touch-action: manipulation;
+            box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
+            transition: all 0.3s;
         }
 
         .restart-btn:hover {
             background-color: #3182ce;
+            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.5);
         }
 
         .pause-tip {
@@ -176,28 +258,19 @@
             justify-content: center;
             touch-action: manipulation;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.2s;
         }
 
         .dir-btn:active {
             background-color: #3182ce;
             transform: scale(0.95);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
 
-        .up {
-            grid-area: up;
-        }
-
-        .down {
-            grid-area: down;
-        }
-
-        .left {
-            grid-area: left;
-        }
-
-        .right {
-            grid-area: right;
-        }
+        .up { grid-area: up; }
+        .down { grid-area: down; }
+        .left { grid-area: left; }
+        .right { grid-area: right; }
 
         /* 暂停按钮 */
         .pause-btn {
@@ -209,21 +282,31 @@
             border-radius: 15px;
             touch-action: manipulation;
             margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(159, 122, 234, 0.3);
         }
 
         .pause-btn:active {
             background-color: #805ad5;
+            transform: scale(0.95);
         }
 
         /* 彩蛋关闭按钮 */
         .close-egg {
-            padding: 6px 15px;
-            font-size: 14px;
-            background-color: #ffd700;
+            padding: 10px 25px;
+            font-size: 16px;
+            background: linear-gradient(90deg, #ffd700, #ff9a00);
             color: #333;
             border: none;
-            border-radius: 15px;
+            border-radius: 20px;
             touch-action: manipulation;
+            z-index: 2;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            animation: btnPulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes btnPulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
         }
     </style>
 </head>
@@ -235,6 +318,12 @@
         <div class="pause-tip" id="pauseTip">已暂停</div>
         <!-- 圣诞彩蛋弹窗 -->
         <div class="christmas-egg" id="christmasEgg">
+            <!-- 星光背景 -->
+            <div class="star-bg" id="starBg"></div>
+            <!-- 圣诞装饰 -->
+            <div class="christmas-deco christmas-tree">🎄</div>
+            <div class="christmas-deco santa">🎅</div>
+            <!-- 文字内容 -->
             <div class="christmas-text">
                 <h2>🎄恭喜吃到5个食物！🎄</h2>
                 <p>祝亲爱的老婆和小年糕圣诞快乐！<br>万事如意！身体健康！</p>
@@ -254,7 +343,7 @@
     </div>
     <button class="restart-btn" id="restartBtn">重新开始</button>
 
-    <!-- 圣诞背景音乐（自动播放，静音加载） -->
+    <!-- 圣诞背景音乐 -->
     <audio id="christmasMusic" loop preload="auto">
         <source src="https://music.163.com/song/media/outer/url?id=186037.mp3" type="audio/mpeg">
     </audio>
@@ -273,11 +362,12 @@
         const closeEgg = document.getElementById('closeEgg');
         const christmasMusic = document.getElementById('christmasMusic');
         const gameContainer = document.querySelector('.game-container');
+        const starBg = document.getElementById('starBg');
 
         // 适配手机屏幕的画布尺寸
-        let gridSize = 20; // 基础格子大小
-        let tileCount; // 格子数量
-        let canvasSize; // 画布实际尺寸
+        let gridSize = 20;
+        let tileCount;
+        let canvasSize;
 
         // 游戏状态
         let snake = [];
@@ -288,24 +378,22 @@
         let gameSpeed = 200;
         let gameLoop;
         let isPaused = false;
-        let isEggShown = false; // 是否显示过圣诞彩蛋
-        let foodEatenCount = 0; // 吃到的食物数量
-        const targetFoodCount = 5; // 触发彩蛋的食物数量
+        let isEggShown = false;
+        let foodEatenCount = 0;
+        const targetFoodCount = 5;
 
         // 初始化画布尺寸
         function initCanvasSize() {
             canvasSize = gameContainer.clientWidth;
             canvas.width = canvasSize;
             canvas.height = canvasSize;
-            // 计算格子数量（取整，保证画布被格子填满）
             tileCount = Math.floor(canvasSize / gridSize);
-            gridSize = canvasSize / tileCount; // 重新计算格子大小，适配画布
+            gridSize = canvasSize / tileCount;
         }
 
         // 初始化游戏
         function initGame() {
             initCanvasSize();
-            // 重置蛇
             snake = [
                 { x: tileCount / 2, y: tileCount / 2 },
                 { x: tileCount / 2 - 1, y: tileCount / 2 },
@@ -324,10 +412,10 @@
             if (gameLoop) clearInterval(gameLoop);
             gameLoop = setInterval(gameUpdate, gameSpeed);
             isPaused = false;
-            // 停止背景音乐
             christmasMusic.pause();
-            // 清除雪花
-            document.querySelectorAll('.snowflake').forEach(s => s.remove());
+            // 清除雪花和星光
+            clearSnowflakes();
+            clearStars();
         }
 
         // 生成食物
@@ -336,7 +424,6 @@
                 x: Math.floor(Math.random() * tileCount),
                 y: Math.floor(Math.random() * tileCount)
             };
-            // 避免食物在蛇身上
             snake.forEach(segment => {
                 if (segment.x === food.x && segment.y === food.y) {
                     generateFood();
@@ -350,20 +437,11 @@
             direction = getValidDirection(nextDirection);
             const head = { ...snake[0] };
 
-            // 移动蛇头
             switch (direction) {
-                case 'up':
-                    head.y--;
-                    break;
-                case 'down':
-                    head.y++;
-                    break;
-                case 'left':
-                    head.x--;
-                    break;
-                case 'right':
-                    head.x++;
-                    break;
+                case 'up': head.y--; break;
+                case 'down': head.y++; break;
+                case 'left': head.x--; break;
+                case 'right': head.x++; break;
             }
 
             snake.unshift(head);
@@ -383,16 +461,14 @@
             // 吃食物
             if (head.x === food.x && head.y === food.y) {
                 score += 10;
-                foodEatenCount++; // 累计吃到的食物数量
+                foodEatenCount++;
                 scoreEl.textContent = score;
                 generateFood();
-                // 加速（每5个食物加快一次，适配新的触发条件）
                 if (score % 25 === 0) {
                     gameSpeed = Math.max(80, gameSpeed - 20);
                     clearInterval(gameLoop);
                     gameLoop = setInterval(gameUpdate, gameSpeed);
                 }
-                // 吃到目标数量食物触发彩蛋
                 if (foodEatenCount === targetFoodCount && !isEggShown) {
                     showChristmasEgg();
                 }
@@ -405,7 +481,6 @@
 
         // 绘制游戏
         function drawGame() {
-            // 清空画布
             ctx.fillStyle = '#fff';
             ctx.fillRect(0, 0, canvasSize, canvasSize);
 
@@ -422,35 +497,23 @@
                 ctx.stroke();
             }
 
-            // 绘制食物（圣诞主题：红色圆形+绿色边框）
+            // 绘制食物（圣诞主题）
             ctx.fillStyle = '#e53935';
             ctx.beginPath();
-            ctx.arc(
-                food.x * gridSize + gridSize / 2,
-                food.y * gridSize + gridSize / 2,
-                gridSize / 2 - 2,
-                0,
-                Math.PI * 2
-            );
+            ctx.arc(food.x * gridSize + gridSize/2, food.y * gridSize + gridSize/2, gridSize/2 - 2, 0, Math.PI*2);
             ctx.fill();
             ctx.strokeStyle = '#4CAF50';
             ctx.lineWidth = 2;
             ctx.stroke();
             ctx.lineWidth = 1;
 
-            // 绘制蛇（圣诞蓝白配色）
+            // 绘制蛇（圣诞配色）
             snake.forEach((segment, index) => {
                 ctx.fillStyle = index === 0 ? '#0066cc' : '#cce5ff';
                 ctx.beginPath();
-                ctx.roundRect(
-                    segment.x * gridSize + 1,
-                    segment.y * gridSize + 1,
-                    gridSize - 2,
-                    gridSize - 2,
-                    4
-                );
+                ctx.roundRect(segment.x * gridSize + 1, segment.y * gridSize + 1, gridSize - 2, gridSize - 2, 4);
                 ctx.fill();
-                // 蛇头添加圣诞装饰（小三角）
+                // 蛇头圣诞装饰
                 if (index === 0) {
                     ctx.fillStyle = '#ffd700';
                     ctx.beginPath();
@@ -462,7 +525,7 @@
             });
         }
 
-        // 验证方向（避免180度转弯）
+        // 验证方向
         function getValidDirection(newDir) {
             if (direction === 'up' && newDir === 'down') return direction;
             if (direction === 'down' && newDir === 'up') return direction;
@@ -475,7 +538,6 @@
         function gameOver() {
             clearInterval(gameLoop);
             gameOverEl.style.display = 'block';
-            // 停止背景音乐
             christmasMusic.pause();
         }
 
@@ -484,68 +546,97 @@
             isEggShown = true;
             isPaused = true;
             christmasEgg.style.display = 'flex';
-            // 播放圣诞背景音乐（适配微信自动播放）
+            // 播放音乐
             christmasMusic.play().catch(err => {
-                // 微信需要用户交互后才能播放，添加点击触发
                 christmasEgg.addEventListener('click', () => {
                     christmasMusic.play();
                 }, { once: true });
             });
-            // 创建雪花动画
+            // 创建星光背景
+            createStars();
+            // 持续创建雪花
             createSnowflakes();
+            snowInterval = setInterval(createSnowflakes, 100);
         }
 
-        // 创建雪花飘落动画
+        // 星光背景创建
+        function createStars() {
+            const starCount = 50;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.style.position = 'absolute';
+                star.style.width = `${Math.random() * 3 + 1}px`;
+                star.style.height = star.style.width;
+                star.style.backgroundColor = Math.random() > 0.8 ? '#ffd700' : '#fff';
+                star.style.borderRadius = '50%';
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.animation = `starTwinkle ${Math.random() * 3 + 2}s ease-in-out infinite`;
+                star.style.animationDelay = `${Math.random() * 3}s`;
+                starBg.appendChild(star);
+            }
+        }
+
+        // 清除星光
+        function clearStars() {
+            starBg.innerHTML = '';
+        }
+
+        // 雪花创建
+        let snowInterval;
         function createSnowflakes() {
-            const snowCount = 30; // 雪花数量
-            const container = gameContainer;
+            const snowTypes = ['snow1', 'snow2', 'snow3', 'snow4', 'snow5'];
+            const snowCount = 15; // 每次创建15片雪花
+            const container = christmasEgg;
+
             for (let i = 0; i < snowCount; i++) {
                 const snowflake = document.createElement('div');
-                snowflake.classList.add('snowflake');
-                snowflake.textContent = '❄️';
-                // 随机位置和动画时长
+                const snowType = snowTypes[Math.floor(Math.random() * snowTypes.length)];
+                snowflake.classList.add('snowflake', snowType);
+                // 随机位置和样式
                 snowflake.style.left = `${Math.random() * 100}%`;
                 snowflake.style.top = '-10px';
-                snowflake.style.animationDuration = `${Math.random() * 5 + 3}s`;
-                snowflake.style.animationDelay = `${Math.random() * 3}s`;
-                snowflake.style.fontSize = `${Math.random() * 10 + 10}px`;
+                snowflake.style.fontSize = `${Math.random() * 15 + 10}px`;
+                snowflake.style.animationDuration = `${Math.random() * 10 + 5}s`;
+                snowflake.style.animationDelay = `${Math.random() * 5}s`;
+                snowflake.style.opacity = Math.random() * 0.8 + 0.2;
                 container.appendChild(snowflake);
                 // 雪花消失后移除
                 setTimeout(() => {
                     snowflake.remove();
-                }, 8000);
+                }, 15000);
             }
         }
 
-        // 绑定方向按钮事件
+        // 清除雪花
+        function clearSnowflakes() {
+            clearInterval(snowInterval);
+            document.querySelectorAll('.snowflake').forEach(s => s.remove());
+        }
+
+        // 事件绑定
         dirButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 if (isPaused && christmasEgg.style.display !== 'flex') return;
                 if (gameOverEl.style.display === 'block') return;
-                const dir = btn.classList[1]; // 获取up/down/left/right类名
-                nextDirection = dir;
+                nextDirection = btn.classList[1];
             });
         });
 
-        // 暂停/继续按钮事件
         pauseBtn.addEventListener('click', () => {
             if (gameOverEl.style.display === 'block' || christmasEgg.style.display === 'flex') return;
             isPaused = !isPaused;
             pauseTip.style.display = isPaused ? 'block' : 'none';
         });
 
-        // 重新开始按钮事件
         restartBtn.addEventListener('click', initGame);
 
-        // 关闭彩蛋按钮事件
         closeEgg.addEventListener('click', () => {
             christmasEgg.style.display = 'none';
             isPaused = false;
-            // 继续播放音乐
             christmasMusic.play();
         });
 
-        // 窗口大小变化时重新适配
         window.addEventListener('resize', initGame);
 
         // 初始化游戏
